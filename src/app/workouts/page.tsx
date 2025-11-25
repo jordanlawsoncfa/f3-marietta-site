@@ -7,16 +7,16 @@ import Link from "next/link";
 const aos = [
     {
         name: "The Battlefield",
-        time: "TBD (Placeholder)",
-        location: "Marietta High School, Marietta, GA",
-        mapLink: "https://maps.google.com/?q=Marietta+High+School",
+        time: "Tuesdays & Thursdays 5:30 AM EST",
+        location: "Marietta High-School - Front Parking Lot, 1171 Whitlock Ave NW, Marietta, GA 30064",
+        mapLink: "https://maps.google.com/?q=1171+Whitlock+Ave+NW,+Marietta,+GA+30064",
         description: "A tough bootcamp-style workout focused on strength, endurance, and pushing limits together. The original F3 Marietta AO.",
     },
     {
         name: "The Last Stand",
-        time: "TBD (Placeholder)",
-        location: "Placeholder Address, Marietta, GA",
-        mapLink: "https://maps.google.com",
+        time: "Mon/Wed 5:30 AM",
+        location: "545 Kenneth E Marcus Way, Marietta, GA 30060",
+        mapLink: "https://maps.google.com/?q=545+Kenneth+E+Marcus+Way,+Marietta,+GA+30060",
         description: "Another men's workout AO in our region with its own flavor and leadership. Come ready to work.",
     },
 ];

@@ -4,11 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 // import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
 
 const navItems = [
     { name: "About", href: "/about" },
     { name: "Workouts", href: "/workouts" },
+    { name: "Glossary", href: "/glossary" },
     { name: "Community", href: "/community" },
     { name: "FNGs", href: "/fng" },
     { name: "Contact", href: "/contact" },
@@ -22,9 +24,7 @@ export function Navbar() {
             <div className="container mx-auto flex h-16 items-center justify-between px-4">
                 <div className="flex items-center gap-2">
                     <Link href="/" className="flex items-center space-x-2">
-                        <span className="text-2xl font-bold tracking-tighter font-heading text-primary">
-                            F3 MARIETTA
-                        </span>
+                        <Logo showSubtext />
                     </Link>
                 </div>
 

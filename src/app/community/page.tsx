@@ -76,7 +76,11 @@ export default function CommunityPage() {
                         </p>
                     </div>
                     <div className="relative h-[300px] rounded-lg overflow-hidden bg-zinc-800 flex items-center justify-center">
-                        <p className="text-muted-foreground">Community Image Placeholder</p>
+                        <img
+                            src="/images/community-group.jpg"
+                            alt="F3 Marietta Community"
+                            className="w-full h-full object-cover"
+                        />
                     </div>
                 </div>
             </Section>
