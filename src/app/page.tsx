@@ -3,6 +3,7 @@ import { Hero } from "@/components/ui/Hero";
 import { Section } from "@/components/ui/Section";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { AssistantSearch } from "@/components/ui/AssistantSearch";
 // import { Dumbbell, Users, Sunrise } from "lucide-react";
 
 export default function Home() {
@@ -15,6 +16,8 @@ export default function Home() {
         ctaLink="/workouts"
         backgroundImage="/images/hero-bg.jpg" // Placeholder, will need to handle this
       />
+
+      <AssistantSearch />
 
       {/* Intro Section */}
       <Section className="bg-background">

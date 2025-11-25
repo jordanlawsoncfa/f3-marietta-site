@@ -49,7 +49,7 @@ export function GlossaryList({ title, entries, showCategoryFilter = false }: Glo
 
             <div className="grid grid-cols-1 gap-4">
                 {filteredEntries.slice(0, 100).map((entry) => (
-                    <Card key={entry.id} className="hover:border-primary/30 transition-colors">
+                    <Card key={entry.id} id={entry.id} className="hover:border-primary/30 transition-colors">
                         <CardHeader className="pb-2">
                             <div className="flex justify-between items-start">
                                 <CardTitle className="text-xl text-primary">{entry.term}</CardTitle>

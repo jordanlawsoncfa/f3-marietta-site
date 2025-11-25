@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/ui/Logo";
 
 export function Footer() {
     return (
@@ -6,11 +7,9 @@ export function Footer() {
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="col-span-1 md:col-span-2">
-                        <Link href="/" className="flex items-center space-x-2 mb-4">
-                            <span className="text-2xl font-bold tracking-tighter font-heading text-primary">
-                                F3 MARIETTA
-                            </span>
-                        </Link>
+                        <div className="mb-4">
+                            <Logo />
+                        </div>
                         <p className="text-muted-foreground max-w-sm">
                             Free, peer-led workouts for men in Marietta, GA.
                             Our mission is to plant, grow, and serve small workout groups for men for the invigoration of male community leadership.
