@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { lexiconEntries, exiconEntries, GlossaryEntry } from "@/../data/f3Glossary";
+import { searchKnowledgeDocs } from "@/../data/f3Knowledge";
 
 // Simple relevance scoring (similar to searchGlossary.ts but server-side)
 // Helper to normalize query and extract core term
@@ -84,7 +85,7 @@ export async function POST(request: Request) {
             });
         }
 
-        // 2. No direct match, proceed with OpenAI search
+        // 2. No direct match, proceed with OpenAI search using Knowledge Docs + Glossary
         const apiKey = process.env.OPENAI_API_KEY;
         if (!apiKey) {
             console.error("OPENAI_API_KEY is not set");
@@ -97,27 +98,41 @@ export async function POST(request: Request) {
         const openai = new OpenAI({ apiKey });
 
         // Find relevant context
-        const relevantLexicon = getRelevantEntries(query, lexiconEntries, 5);
-        const relevantExicon = getRelevantEntries(query, exiconEntries, 5);
-        const allRelevant = [...relevantLexicon, ...relevantExicon];
+        const relevantLexicon = getRelevantEntries(query, lexiconEntries, 3);
+        const relevantExicon = getRelevantEntries(query, exiconEntries, 3);
+        const relevantDocs = searchKnowledgeDocs(query, 3);
+
+        const allRelevantGlossary = [...relevantLexicon, ...relevantExicon];
 
         // Build context string
-        const contextString = allRelevant
-            .map((e) => `Term: ${e.term}\nType: ${lexiconEntries.includes(e) ? "Lexicon" : "Exicon"}\nDefinition: ${e.shortDescription}`)
-            .join("\n\n");
+        let contextString = "";
+
+        if (relevantDocs.length > 0) {
+            contextString += "--- F3 KNOWLEDGE DOCS ---\n";
+            contextString += relevantDocs.map(d => `Title: ${d.title}\nContent:\n${d.content}`).join("\n\n");
+            contextString += "\n\n";
+        }
+
+        if (allRelevantGlossary.length > 0) {
+            contextString += "--- F3 GLOSSARY ENTRIES ---\n";
+            contextString += allRelevantGlossary
+                .map((e) => `Term: ${e.term}\nType: ${lexiconEntries.includes(e) ? "Lexicon" : "Exicon"}\nDefinition: ${e.shortDescription}`)
+                .join("\n\n");
+        }
 
         // Call OpenAI with strict prompt
         const systemPrompt = `You are the official F3 Marietta Assistant.
 
-You must ONLY answer questions using the provided F3 Lexicon and Exicon entries and the content of the F3 Marietta website.
+You must ONLY answer questions using the provided F3 Knowledge Docs and Glossary entries.
 
 Rules:
-- Use ONLY the glossary entries passed in the prompt as your source of truth.
+- Use ONLY the provided context as your source of truth.
 - Do NOT rely on outside or general world knowledge.
-- If the glossary data does not contain an answer, say:
-  "I couldn’t find this term in the F3 Lexicon or Exicon. Here are the closest related entries."
+- If the provided context does not contain an answer, say:
+  "I couldn’t find an answer in the F3 Marietta knowledge base. Try asking about specific terms or check the About page."
 - Do NOT invent definitions or meanings.
 - Stay within the context of F3, workouts, and F3 terminology.
+- Keep answers concise, friendly, and encouraging.
 
 Context:
 ${contextString}`;
@@ -128,14 +143,14 @@ ${contextString}`;
                 { role: "system", content: systemPrompt },
                 { role: "user", content: query },
             ],
-            max_tokens: 150,
+            max_tokens: 250,
             temperature: 0.5, // Lower temperature for more deterministic answers
         });
 
         const answerText = completion.choices[0]?.message?.content || "I couldn't generate an answer at this time.";
 
         // Format related entries
-        const relatedEntries = allRelevant.map((entry) => {
+        const relatedEntries = allRelevantGlossary.map((entry) => {
             const isLexicon = lexiconEntries.some((l) => l.id === entry.id);
             const type = isLexicon ? "Lexicon" : "Exicon";
             return {
@@ -146,9 +161,22 @@ ${contextString}`;
             };
         });
 
+        // Add related pages if docs were used
+        // This is a simple mapping for now
+        const relatedPages = relevantDocs.map(d => {
+            if (d.id === "about" || d.id === "mission" || d.id === "leadership") return { title: "About Us", url: "/about" };
+            if (d.id === "first-workout") return { title: "New Guys (FNGs)", url: "/fng" };
+            if (d.id === "marietta") return { title: "Community", url: "/community" };
+            return null;
+        }).filter(Boolean);
+
+        // Deduplicate related pages
+        const uniqueRelatedPages = Array.from(new Set(relatedPages.map(p => JSON.stringify(p)))).map(s => JSON.parse(s));
+
         return NextResponse.json({
             answerText,
             relatedEntries,
+            relatedPages: uniqueRelatedPages
         });
     } catch (error) {
         console.error("Error in assistant API:", error);

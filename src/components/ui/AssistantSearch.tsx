@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
-// import { Search, Loader2, ArrowRight } from "lucide-react"; // Assuming lucide is available or we use emoji/text
+import Link from "next/link";
 
 interface RelatedEntry {
     type: string;
@@ -13,10 +13,23 @@ interface RelatedEntry {
     url: string;
 }
 
+interface RelatedPage {
+    title: string;
+    url: string;
+}
+
 interface AssistantResponse {
     answerText: string;
     relatedEntries: RelatedEntry[];
+    relatedPages?: RelatedPage[];
 }
+
+const EXAMPLE_QUESTIONS = [
+    "What is F3?",
+    "What should I expect at my first workout?",
+    "What's a CSAUP?",
+    "What's the difference between the Lexicon and Exicon?",
+];
 
 export function AssistantSearch() {
     const [query, setQuery] = useState("");
@@ -24,19 +37,19 @@ export function AssistantSearch() {
     const [response, setResponse] = useState<AssistantResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!query.trim()) return;
+    const handleSearch = async (searchQuery: string) => {
+        if (!searchQuery.trim()) return;
 
         setIsLoading(true);
         setError(null);
         setResponse(null);
+        setQuery(searchQuery);
 
         try {
             const res = await fetch("/api/assistant", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query }),
+                body: JSON.stringify({ query: searchQuery }),
             });
 
             const data = await res.json();
@@ -53,6 +66,11 @@ export function AssistantSearch() {
         }
     };
 
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        handleSearch(query);
+    };
+
     return (
         <div className="w-full max-w-3xl mx-auto my-8 px-4">
             <div className="text-center mb-6">
@@ -60,30 +78,47 @@ export function AssistantSearch() {
                 <p className="text-muted-foreground">Ask about F3, workouts, the Lexicon, or where to start.</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="relative mb-8">
-                <div className="relative flex items-center">
-                    <input
-                        type="text"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        placeholder="e.g., What is a Merkin? or When are the workouts?"
-                        className="w-full px-6 py-4 text-lg rounded-full border border-input bg-background shadow-sm focus:outline-none focus:ring-2 focus:ring-primary pr-32"
-                    />
-                    <div className="absolute right-2">
-                        <Button
-                            type="submit"
-                            disabled={isLoading || !query.trim()}
-                            className="rounded-full px-6"
-                        >
-                            {isLoading ? (
-                                <span className="animate-spin mr-2">⏳</span>
-                            ) : (
-                                <span>Ask</span>
-                            )}
-                        </Button>
+            <div className="mb-8">
+                <form onSubmit={handleSubmit} className="relative mb-4">
+                    <div className="relative flex items-center">
+                        <input
+                            type="text"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            placeholder="e.g., What is a Merkin? or When are the workouts?"
+                            className="w-full px-6 py-4 text-lg rounded-full border border-input bg-background shadow-sm focus:outline-none focus:ring-2 focus:ring-primary pr-32"
+                        />
+                        <div className="absolute right-2">
+                            <Button
+                                type="submit"
+                                disabled={isLoading || !query.trim()}
+                                className="rounded-full px-6"
+                            >
+                                {isLoading ? (
+                                    <span className="animate-spin mr-2">⏳</span>
+                                ) : (
+                                    <span>Ask</span>
+                                )}
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+
+                {/* Example Questions */}
+                {!response && !isLoading && (
+                    <div className="flex flex-wrap justify-center gap-2">
+                        {EXAMPLE_QUESTIONS.map((q) => (
+                            <button
+                                key={q}
+                                onClick={() => handleSearch(q)}
+                                className="text-sm bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-full transition-colors text-muted-foreground hover:text-foreground"
+                            >
+                                {q}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
 
             {error && (
                 <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-center mb-6">
@@ -102,6 +137,28 @@ export function AssistantSearch() {
                         </CardContent>
                     </Card>
 
+                    {/* Related Pages */}
+                    {response.relatedPages && response.relatedPages.length > 0 && (
+                        <div>
+                            <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">
+                                Recommended Pages
+                            </h4>
+                            <div className="flex flex-wrap gap-3">
+                                {response.relatedPages.map((page) => (
+                                    <Link
+                                        key={page.url}
+                                        href={page.url}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:border-primary/50 hover:bg-accent/50 transition-colors font-medium"
+                                    >
+                                        {page.title}
+                                        <span className="text-muted-foreground">→</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Related Glossary Entries */}
                     {response.relatedEntries.length > 0 && (
                         <div>
                             <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">
