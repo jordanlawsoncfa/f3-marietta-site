@@ -13,21 +13,6 @@ export const lexiconEntries: GlossaryEntry[] = [
     "shortDescription": "The general premise that 10% of the people in any Community or Organization will account for 90% of its IMPACT."
   },
   {
-    "id": "10kh",
-    "term": "10KH",
-    "shortDescription": "Short for Ten Thousand Hours."
-  },
-  {
-    "id": "1e",
-    "term": "1E",
-    "shortDescription": "Short for First Estate."
-  },
-  {
-    "id": "1kw",
-    "term": "1KW",
-    "shortDescription": "Short for One-Thousand Words."
-  },
-  {
     "id": "3p-rule-of",
     "term": "3P (RULE OF)",
     "shortDescription": "To be Effective, a Team must be Proximate, Purposeful and Periodic."
@@ -2878,11 +2863,6 @@ export const lexiconEntries: GlossaryEntry[] = [
     "shortDescription": "A beatdown so difficult that the Q merlots."
   },
   {
-    "id": "q-spew",
-    "term": "Q-Spew",
-    "shortDescription": "when the QIC Splashes Merlot on his own BD."
-  },
-  {
     "id": "qdrenaline",
     "term": "QDRENALINE",
     "shortDescription": "A biochemical released into the body only at times when one Qs a workout, thereby causing said Q to be run faster, lift heavier, and talk louder than at any other time. In excessive doses, it can cause the Q to become overzealous and lead to an excessive amount of mumblechatter from the Pax."
@@ -3871,26 +3851,6 @@ export const lexiconEntries: GlossaryEntry[] = [
 
 export const exiconEntries: GlossaryEntry[] = [
   {
-    "id": "1",
-    "term": "1",
-    "shortDescription": "Sit ups"
-  },
-  {
-    "id": "20",
-    "term": "20",
-    "shortDescription": "25"
-  },
-  {
-    "id": "7220",
-    "term": "7220",
-    "shortDescription": "Conceived based on the elevation of Laramie, WY (7220 feet ASL), PAX locate near bottom of short hill or berm (about a 30% incline for 10 yards distance is ideal).  Start at bottom with 7 Merkins, bear crawl to top of berm, 2 Burpees, bear crawl forward or backward back down, 20 squats.  Rinse and repeat based on Q's desire.  5X is respectable.  #mumblechatter erupts beyond that."
-  },
-  {
-    "id": "ab-roll-term-derived-from-the-fact-that-as-you-complete-the-set-you-slowly-roll-from-your-left-side-over-to-your-right-side-while-burning-the-abs-an-excellent-wor-or-6mom-exercise",
-    "term": "\"ab roll.\"  term derived from the fact that as you complete the set, you slowly roll from your left side, over to your right side while burning the abs.  an excellent WOR or 6MOM exercise.",
-    "shortDescription": "series of 5 ab exercises \"rolled\" into one big set.  25 left side cindy crawfords immediately followed by 25 left leg on right knee pretzel crunches immediately followed by 25 LBCs immediately followed by 25 right leg on left knee pretzel crunches immediately followed by 25 right side cindy crawfords."
-  },
-  {
     "id": "1st-10",
     "term": "1st & 10",
     "shortDescription": "100 yard field marked at 10 yard increments. Perform 10 Merkins, 1 Burpee (11\ufffds) at the 10, sprint the remaining 90 yards. Recover jog back to the 20. Perform 9 Merkins, 2 Burpees, sprint the remaining 80 yards, recover jog to the 30. Repeat until all 100 yards and 11\ufffds have been completed. Plank/core exercise until remaining PAX complete."
@@ -4094,11 +4054,6 @@ export const exiconEntries: GlossaryEntry[] = [
     "id": "around-the-world",
     "term": "Around the World",
     "shortDescription": "Start in the plank position. While your hands remain in the same spot walk your feet in a full circle all the way around your hands, always facing the same direction. Kind of like a break dance move. Each completed circle counts as one."
-  },
-  {
-    "id": "around-the-world",
-    "term": "Around-the-World",
-    "shortDescription": "Start out in the plank position. Walk your feet in a counterclockwise circle all the way around, breakdance style, till you end up back in the original plank position. Always face the same direction as you complete each circle."
   },
   {
     "id": "ascending-curb-crawl",

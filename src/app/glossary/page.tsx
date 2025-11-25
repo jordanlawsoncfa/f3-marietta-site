@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { lexiconEntries, exiconEntries } from "@/../data/f3Glossary";
 import { cn } from "@/lib/utils";
+import { searchGlossaryEntries } from "@/lib/searchGlossary";
 
 export default function GlossaryPage() {
     const [activeTab, setActiveTab] = useState<"lexicon" | "exicon">("lexicon");
@@ -16,13 +17,7 @@ export default function GlossaryPage() {
     const title = activeTab === "lexicon" ? "Lexicon" : "Exicon";
 
     const filteredEntries = useMemo(() => {
-        if (!searchQuery) return currentEntries;
-        const lowerQuery = searchQuery.toLowerCase();
-        return currentEntries.filter(
-            (entry) =>
-                entry.term.toLowerCase().includes(lowerQuery) ||
-                entry.shortDescription.toLowerCase().includes(lowerQuery)
-        );
+        return searchGlossaryEntries(currentEntries, searchQuery);
     }, [currentEntries, searchQuery]);
 
     return (
