@@ -1,37 +1,35 @@
+import fs from "fs";
+import path from "path";
 import { Section } from "@/components/ui/Section";
 import { Hero } from "@/components/ui/Hero";
 import { FAQItem } from "@/components/ui/FAQItem";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 
-const faqs = [
-    {
-        question: "Who is F3 for?",
-        answer: "F3 is for any man who wants to get in shape, make friends, and become a better leader. We welcome men of all ages and fitness levels."
-    },
-    {
-        question: "What does it cost?",
-        answer: "It is 100% free. Always. No catch."
-    },
-    {
-        question: "What should I bring/wear?",
-        answer: "Wear standard workout clothes and running shoes. Bring a pair of work gloves (we do pushups on pavement/grass) and water if you need it. That's it."
-    },
-    {
-        question: "What if I'm out of shape?",
-        answer: "Perfect. You're exactly who we're looking for. The workout is designed to be scalable. You do you. No man is left behind."
-    },
-    {
-        question: "What time do workouts start?",
-        answer: "Workouts typically start early (around 5:30 AM or 6:00 AM) to get it done before the day starts. Check the Workouts page for specific times."
-    },
-    {
-        question: "Do I need to sign up?",
-        answer: "Nope. Just show up. We'll have a disclaimer for you to agree to, but no registration is required."
+function getFAQs() {
+    try {
+        const filePath = path.join(process.cwd(), "data", "faq.md");
+        const fileContent = fs.readFileSync(filePath, "utf-8");
+
+        // Simple markdown parsing for H2 questions and paragraph answers
+        const sections = fileContent.split(/^## /m).slice(1);
+
+        return sections.map(section => {
+            const [question, ...answerLines] = section.split("\n");
+            return {
+                question: question.trim(),
+                answer: answerLines.join("\n").trim()
+            };
+        });
+    } catch (error) {
+        console.error("Error reading FAQ file:", error);
+        return [];
     }
-];
+}
 
 export default function FNGPage() {
+    const faqs = getFAQs();
+
     return (
         <div className="flex flex-col min-h-screen">
             <Hero

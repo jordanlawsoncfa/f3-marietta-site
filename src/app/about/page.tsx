@@ -7,7 +7,6 @@ export default function AboutPage() {
             <Hero
                 title="ABOUT F3 MARIETTA"
                 subtitle="Planting, growing, and serving small workout groups for men."
-                ctaText="Join Us"
                 ctaLink="/workouts"
                 backgroundImage="/images/about-bg.jpg"
             />

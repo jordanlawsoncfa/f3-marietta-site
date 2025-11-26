@@ -14,6 +14,7 @@ const KNOWLEDGE_FILES = [
     { id: "first-workout", filename: "f3-first-workout.md", title: "Your First Workout" },
     { id: "leadership", filename: "f3-leadership.md", title: "Leadership (The Q)" },
     { id: "marietta", filename: "f3-marietta-region.md", title: "F3 Marietta Region" },
+    { id: "faq", filename: "faq.md", title: "Frequently Asked Questions" },
 ];
 
 export function getAllKnowledgeDocs(): KnowledgeDoc[] {

@@ -10,8 +10,6 @@ export default function ContactPage() {
             <Hero
                 title="CONTACT US"
                 subtitle="Have questions? Want to start an AO? Reach out."
-                ctaText="Find a Workout"
-                ctaLink="/workouts"
                 backgroundImage="/images/contact-bg.jpg"
             />
 

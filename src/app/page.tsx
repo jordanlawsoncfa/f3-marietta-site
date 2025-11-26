@@ -9,15 +9,27 @@ import { AssistantSearch } from "@/components/ui/AssistantSearch";
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      <Hero
+      {/* <Hero
         title="F3 MARIETTA"
         subtitle="Fitness, Fellowship, and Faith. Free, peer-led workouts for men in Marietta, GA."
         ctaText="Find a Workout"
         ctaLink="/workouts"
         backgroundImage="/images/hero-bg.jpg" // Placeholder, will need to handle this
-      />
+        backgroundImage="/images/hero-bg.jpg" // Placeholder, will need to handle this
+      /> */}
 
-      <AssistantSearch />
+      {/* Primary Hero: AI Assistant */}
+      <section className="relative py-12 md:py-20 bg-background flex flex-col items-center justify-center min-h-[50vh]">
+        <div className="container px-4 mx-auto text-center">
+          <AssistantSearch />
+
+          <div className="mt-8 max-w-2xl mx-auto">
+            <p className="text-muted-foreground font-medium">
+              F3 Marietta: Fitness, Fellowship, and Faith. Free, peer-led workouts for men in Marietta, GA.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Intro Section */}
       <Section className="bg-background">
@@ -132,6 +144,6 @@ export default function Home() {
           <Link href="/workouts">Find a Location</Link>
         </Button>
       </Section>
-    </div>
+    </div >
   );
 }

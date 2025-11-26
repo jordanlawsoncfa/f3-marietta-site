@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/Button";
 interface HeroProps {
     title: string;
     subtitle: string;
-    ctaText: string;
-    ctaLink: string;
+    ctaText?: string;
+    ctaLink?: string;
     backgroundImage?: string;
 }
 
@@ -29,9 +29,11 @@ export function Hero({ title, subtitle, ctaText, ctaLink, backgroundImage }: Her
                 <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-8">
                     {subtitle}
                 </p>
-                <Button asChild size="lg" className="text-lg px-8 py-6">
-                    <Link href={ctaLink}>{ctaText}</Link>
-                </Button>
+                {ctaText && ctaLink && (
+                    <Button asChild size="lg" className="text-lg px-8 py-6">
+                        <Link href={ctaLink}>{ctaText}</Link>
+                    </Button>
+                )}
             </div>
         </div>
     );

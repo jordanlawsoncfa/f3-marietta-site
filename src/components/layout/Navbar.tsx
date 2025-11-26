@@ -2,18 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
-// import { Menu, X } from "lucide-react";
+// import { Menu, X, Home } from "lucide-react"; // Assuming lucide is available
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
 
 const navItems = [
+    { name: "Home", href: "/" },
     { name: "About", href: "/about" },
-    { name: "Workouts", href: "/workouts" },
-    { name: "Glossary", href: "/glossary" },
+    { name: "Locations", href: "/workouts" },
+    { name: "F3 Terms", href: "/glossary" },
     { name: "Community", href: "/community" },
-    { name: "FNGs", href: "/fng" },
-    { name: "Contact", href: "/contact" },
+    { name: "New to F3", href: "/fng" },
+    { name: "Contact Us", href: "/contact" },
+    { name: "F3 Gear", href: "https://f3gear.com/", external: true },
 ];
 
 export function Navbar() {
@@ -30,16 +32,19 @@ export function Navbar() {
                 <nav className="hidden md:flex items-center gap-6">
                     {navItems.map((item) => (
                         <Link
-                            key={item.href}
+                            key={item.name}
                             href={item.href}
-                            className="text-sm font-medium transition-colors hover:text-primary"
+                            target={item.external ? "_blank" : undefined}
+                            rel={item.external ? "noopener noreferrer" : undefined}
+                            className={cn(
+                                "text-sm font-medium transition-colors hover:text-primary flex items-center gap-1",
+                                item.external && "text-muted-foreground hover:text-foreground"
+                            )}
                         >
+
                             {item.name}
                         </Link>
                     ))}
-                    <Button asChild variant="default" size="sm">
-                        <Link href="/workouts">Find a Workout</Link>
-                    </Button>
                 </nav>
 
                 {/* Mobile Menu Toggle */}
@@ -49,7 +54,6 @@ export function Navbar() {
                     aria-label="Toggle menu"
                 >
                     {isOpen ? "X" : "Menu"}
-                    {/* {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />} */}
                 </button>
             </div>
 
@@ -59,19 +63,20 @@ export function Navbar() {
                     <div className="container mx-auto flex flex-col gap-4 p-4">
                         {navItems.map((item) => (
                             <Link
-                                key={item.href}
+                                key={item.name}
                                 href={item.href}
-                                className="text-sm font-medium transition-colors hover:text-primary"
+                                target={item.external ? "_blank" : undefined}
+                                rel={item.external ? "noopener noreferrer" : undefined}
+                                className={cn(
+                                    "text-sm font-medium transition-colors hover:text-primary flex items-center gap-2 py-2",
+                                    item.external && "text-muted-foreground"
+                                )}
                                 onClick={() => setIsOpen(false)}
                             >
+
                                 {item.name}
                             </Link>
                         ))}
-                        <Button asChild variant="default" className="w-full">
-                            <Link href="/workouts" onClick={() => setIsOpen(false)}>
-                                Find a Workout
-                            </Link>
-                        </Button>
                     </div>
                 </div>
             )}

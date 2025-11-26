@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { searchGlossaryEntries } from "@/lib/searchGlossary";
 import { GlossaryEntry } from "@/../data/f3Glossary";
 
 interface GlossaryListProps {
@@ -15,13 +16,7 @@ export function GlossaryList({ title, entries, showCategoryFilter = false }: Glo
     const [searchQuery, setSearchQuery] = useState("");
 
     const filteredEntries = useMemo(() => {
-        if (!searchQuery) return entries;
-        const lowerQuery = searchQuery.toLowerCase();
-        return entries.filter(
-            (entry) =>
-                entry.term.toLowerCase().includes(lowerQuery) ||
-                entry.shortDescription.toLowerCase().includes(lowerQuery)
-        );
+        return searchGlossaryEntries(entries, searchQuery);
     }, [entries, searchQuery]);
 
     // Group by first letter for A-Z sorting if needed, but for now just flat list with search is fine.

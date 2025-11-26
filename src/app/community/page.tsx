@@ -9,8 +9,6 @@ export default function CommunityPage() {
             <Hero
                 title="SERVING MARIETTA"
                 subtitle="Building better men for a better community."
-                ctaText="Get Involved"
-                ctaLink="/contact"
                 backgroundImage="/images/community-bg.jpg"
             />
 
