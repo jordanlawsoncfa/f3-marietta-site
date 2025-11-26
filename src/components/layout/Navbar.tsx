@@ -45,6 +45,9 @@ export function Navbar() {
                             {item.name}
                         </Link>
                     ))}
+                    <Button asChild variant="default" className="ml-2 font-bold uppercase tracking-wider">
+                        <Link href="/workouts">Find a Workout</Link>
+                    </Button>
                 </nav>
 
                 {/* Mobile Menu Toggle */}
@@ -77,6 +80,9 @@ export function Navbar() {
                                 {item.name}
                             </Link>
                         ))}
+                        <Button asChild variant="default" className="w-full font-bold uppercase tracking-wider mt-2" onClick={() => setIsOpen(false)}>
+                            <Link href="/workouts">Find a Workout</Link>
+                        </Button>
                     </div>
                 </div>
             )}
