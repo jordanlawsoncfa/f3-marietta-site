@@ -20,3 +20,9 @@ There are 5 Principles of F3:
 4. Peer-led in a rotating fashion   
 5. Ends with a Circle of Trust (COT)
 
+Number of workout groups: There are over 5,627 distinct F3 workout groups.
+
+Number of regions: These groups are organized into 479 regions.
+How to find a group: You can find a location using the F3 Nation map or the F3Near.Me site.
+
+Details: Region-specific websites offer more detailed information about local workouts. 
