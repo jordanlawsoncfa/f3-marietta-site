@@ -2,6 +2,7 @@ import { Section } from "@/components/ui/Section";
 import { Hero } from "@/components/ui/Hero";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 // import { HeartHandshake, Users, Trophy } from "lucide-react";
+import Image from "next/image";
 
 export default function CommunityPage() {
     return (
@@ -24,7 +25,13 @@ export default function CommunityPage() {
                     <Card>
                         <CardHeader>
                             {/* <Users className="h-10 w-10 text-primary mb-2" /> */}
-                            <span className="text-4xl mb-2">👥</span>
+                            <Image
+                                src="/icons/community-leadership.svg"
+                                alt="Community Leadership Icon"
+                                width={40}
+                                height={40}
+                                className="mb-2"
+                            />
                             <CardTitle>Community Leadership</CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -37,7 +44,13 @@ export default function CommunityPage() {
                     <Card>
                         <CardHeader>
                             {/* <HeartHandshake className="h-10 w-10 text-primary mb-2" /> */}
-                            <span className="text-4xl mb-2">🤝</span>
+                            <Image
+                                src="/icons/service-projects.svg"
+                                alt="Service Projects Icon"
+                                width={40}
+                                height={40}
+                                className="mb-2"
+                            />
                             <CardTitle>Service Projects</CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -50,7 +63,13 @@ export default function CommunityPage() {
                     <Card>
                         <CardHeader>
                             {/* <Trophy className="h-10 w-10 text-primary mb-2" /> */}
-                            <span className="text-4xl mb-2">🏆</span>
+                            <Image
+                                src="/icons/male-mental-health.svg"
+                                alt="Male Mental Health Icon"
+                                width={40}
+                                height={40}
+                                className="mb-2"
+                            />
                             <CardTitle>Male Mental Health</CardTitle>
                         </CardHeader>
                         <CardContent>

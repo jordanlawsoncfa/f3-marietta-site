@@ -2,19 +2,31 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-interface LogoProps {
+type LogoProps = {
     className?: string;
-}
+    size?: "sm" | "md" | "lg";
+};
 
-export function Logo({ className }: LogoProps) {
+export function Logo({ className, size = "md" }: LogoProps) {
+    const sizeClasses = {
+        sm: "h-8 w-8",
+        md: "h-24 w-24 md:h-28 md:w-28",
+        lg: "h-28 w-28 md:h-32 md:w-32",
+    };
+
     return (
-        <Link href="/" className={cn("relative block", className)}>
-            <div className="relative w-12 h-12 sm:w-14 sm:h-14">
+        <Link href="/" className={cn("block relative shrink-0", className)}>
+            <div
+                className={cn(
+                    "relative overflow-hidden rounded-full bg-white",
+                    sizeClasses[size]
+                )}
+            >
                 <Image
-                    src="/f3-marietta-logo.png"
-                    alt="F3 Marietta"
+                    src="/icons/f3mariettalogo-main.png"
+                    alt="F3 Marietta logo – Fitness, Fellowship, Faith"
                     fill
-                    className="object-contain"
+                    className="object-cover"
                     priority
                 />
             </div>

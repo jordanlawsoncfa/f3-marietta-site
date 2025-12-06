@@ -9,14 +9,14 @@ const aos = [
         name: "The Battlefield",
         time: "Tuesdays & Thursdays 5:30 AM EST",
         location: "Marietta High-School - Front Parking Lot, 1171 Whitlock Ave NW, Marietta, GA 30064",
-        mapLink: "https://maps.google.com/?q=1171+Whitlock+Ave+NW,+Marietta,+GA+30064",
+        mapLink: "https://map.f3nation.com/?eventId=47961&locationId=47965",
         description: "A tough bootcamp-style workout focused on strength, endurance, and pushing limits together. The original F3 Marietta AO.",
     },
     {
         name: "The Last Stand",
         time: "Mon/Wed 5:30 AM",
         location: "545 Kenneth E Marcus Way, Marietta, GA 30060",
-        mapLink: "https://maps.google.com/?q=545+Kenneth+E+Marcus+Way,+Marietta,+GA+30060",
+        mapLink: "https://map.f3nation.com/?eventId=44023&locationId=44024",
         description: "Another men's workout AO in our region with its own flavor and leadership. Come ready to work.",
     },
 ];
@@ -48,25 +48,33 @@ export default function WorkoutsPage() {
                 </div>
             </Section>
 
+            <section className="mt-12 mb-20">
+                <div className="max-w-2xl mx-auto text-center bg-[#0A1A2F] border border-[#23334A] rounded-xl px-6 py-8">
+                    <h2 className="text-xl font-semibold mb-2 text-white">Not in Marietta? No problem!</h2>
+                    <p className="text-gray-300">
+                        You can find F3 workouts all across the country (and the world). Use the F3 Nation map to search for any region or AO.
+                    </p>
+                    <a
+                        href="https://map.f3nation.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-4 inline-flex items-center justify-center px-4 py-2 rounded-md bg-[#4A76A8] hover:bg-[#3A5E88] text-white font-semibold"
+                    >
+                        Find F3 Near You
+                    </a>
+                </div>
+            </section>
+
             <div className="sticky bottom-4 z-40 flex justify-center w-full pointer-events-none">
                 <div className="bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg pointer-events-auto flex items-center gap-4 animate-in slide-in-from-bottom-4 fade-in duration-500">
                     <span className="font-bold">First time?</span>
                     <span className="text-sm hidden sm:inline">Just show up 5-10 minutes early and tell them you're an FNG.</span>
                     <Button asChild size="sm" variant="secondary" className="font-bold">
-                        <Link href="/fng">New Guys Start Here</Link>
+                        <Link href="/fng">FAQ</Link>
                     </Button>
                 </div>
             </div>
 
-            <Section className="bg-muted/30 text-center">
-                <h2 className="text-2xl font-bold font-heading mb-4">CAN'T FIND A WORKOUT?</h2>
-                <p className="text-muted-foreground mb-6">
-                    We are constantly expanding. Check back often or reach out to us to suggest a new location.
-                </p>
-                <Button asChild variant="outline">
-                    <Link href="/contact">Contact Us</Link>
-                </Button>
-            </Section>
         </div>
     );
 }
