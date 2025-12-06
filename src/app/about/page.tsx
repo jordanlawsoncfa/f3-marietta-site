@@ -14,14 +14,14 @@ export default function AboutPage() {
             <Section>
                 <div className="max-w-3xl mx-auto space-y-8">
                     <div>
-                        <h2 className="text-3xl font-bold font-heading mb-4">OUR MISSION</h2>
+                        <h2 className="text-2xl md:text-3xl font-bold font-heading mb-4">OUR MISSION</h2>
                         <p className="text-xl font-medium italic border-l-4 border-primary pl-4 py-2 bg-muted/30">
                             "To plant, grow, and serve small workout groups for men for the invigoration of male community leadership."
                         </p>
                     </div>
 
                     <div>
-                        <h2 className="text-3xl font-bold font-heading mb-4">OUR STORY</h2>
+                        <h2 className="text-2xl md:text-3xl font-bold font-heading mb-4">OUR STORY</h2>
                         <p className="text-muted-foreground mb-4">
                             F3 Marietta began in June 2024 with the launch of our first workout location (AO), "The Battlefield," at Marietta High School. What started as a small group of men gathering in the gloom has grown into a thriving community.
                         </p>
@@ -34,7 +34,7 @@ export default function AboutPage() {
                     </div>
 
                     <div>
-                        <h2 className="text-3xl font-bold font-heading mb-4">WHY WE DO IT</h2>
+                        <h2 className="text-2xl md:text-3xl font-bold font-heading mb-4">WHY WE DO IT</h2>
                         <p className="text-muted-foreground mb-4">
                             We believe that men are suffering from a lack of connection and purpose. F3 provides a solution to the isolation many men face. By suffering together in a workout, we build bonds that allow us to support each other in all areas of life.
                         </p>

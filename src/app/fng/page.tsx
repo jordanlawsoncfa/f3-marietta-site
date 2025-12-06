@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import { Section } from "@/components/ui/Section";
-import { Hero } from "@/components/ui/Hero";
 import { FAQItem } from "@/components/ui/FAQItem";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
@@ -32,19 +31,11 @@ export default function FNGPage() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <Hero
-                title="NEW GUYS (FNGs)"
-                subtitle="Everything you need to know before your first workout."
-                ctaText="Find a Workout"
-                ctaLink="/workouts"
-                backgroundImage="/images/fng-bg.jpg"
-            />
-
-            <Section>
+            <Section className="pt-12 md:pt-20">
                 <div className="max-w-3xl mx-auto">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold font-heading mb-4">FREQUENTLY ASKED QUESTIONS</h2>
-                        <p className="text-muted-foreground">
+                        <h1 className="text-3xl md:text-5xl font-bold font-heading mb-4">FREQUENTLY ASKED QUESTIONS</h1>
+                        <p className="text-muted-foreground text-lg">
                             Got questions? We've got answers. If you don't see what you're looking for, reach out.
                         </p>
                     </div>
@@ -57,13 +48,13 @@ export default function FNGPage() {
                 </div>
             </Section>
 
-            <Section className="bg-primary text-primary-foreground text-center">
-                <h2 className="text-3xl font-bold font-heading mb-6">NO MORE EXCUSES</h2>
-                <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-                    You've read the FAQs. You know it's free. You know we're waiting for you.
+            <Section className="bg-muted/30 text-center">
+                <h2 className="text-2xl md:text-3xl font-bold font-heading mb-6">STILL HAVE QUESTIONS?</h2>
+                <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90 text-muted-foreground">
+                    Don't let questions stop you from showing up. The best way to learn is to experience it.
                 </p>
-                <Button asChild size="lg" variant="secondary" className="text-lg px-8 py-6 font-bold">
-                    <Link href="/workouts">Pick a Workout & Show Up</Link>
+                <Button asChild variant="outline" size="lg">
+                    <Link href="/contact">Contact Us</Link>
                 </Button>
             </Section>
         </div>

@@ -165,7 +165,7 @@ ${contextString}`;
         // This is a simple mapping for now
         const relatedPages = relevantDocs.map(d => {
             if (d.id === "about" || d.id === "mission" || d.id === "leadership") return { title: "About Us", url: "/about" };
-            if (d.id === "first-workout") return { title: "New Guys (FNGs)", url: "/fng" };
+            if (d.id === "first-workout") return { title: "New to F3", url: "/fng" };
             if (d.id === "marietta") return { title: "Community", url: "/community" };
             return null;
         }).filter(Boolean);

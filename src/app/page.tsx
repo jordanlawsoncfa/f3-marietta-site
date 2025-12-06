@@ -1,40 +1,27 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Hero } from "@/components/ui/Hero";
 import { Section } from "@/components/ui/Section";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
-import { AssistantSearch } from "@/components/ui/AssistantSearch";
+import { FitnessIcon, FellowshipIcon, FaithIcon } from "@/components/ui/F3Icons";
 // import { Dumbbell, Users, Sunrise } from "lucide-react";
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* <Hero
+      <Hero
         title="F3 MARIETTA"
         subtitle="Fitness, Fellowship, and Faith. Free, peer-led workouts for men in Marietta, GA."
         ctaText="Find a Workout"
         ctaLink="/workouts"
-        backgroundImage="/images/hero-bg.jpg" // Placeholder, will need to handle this
-        backgroundImage="/images/hero-bg.jpg" // Placeholder, will need to handle this
-      /> */}
+        backgroundImage="/images/MariettaHomePage.jpeg"
+      />
 
-      {/* Primary Hero: AI Assistant */}
-      <section className="relative py-12 md:py-20 bg-background flex flex-col items-center justify-center min-h-[50vh]">
-        <div className="container px-4 mx-auto text-center">
-          <AssistantSearch />
-
-          <div className="mt-8 max-w-2xl mx-auto">
-            <p className="text-muted-foreground font-medium">
-              F3 Marietta: Fitness, Fellowship, and Faith. Free, peer-led workouts for men in Marietta, GA.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Intro Section */}
-      <Section className="bg-background">
+      {/* 1. What is F3? (Moved to top) */}
+      <Section className="bg-background pt-12 md:pt-20">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold font-heading mb-4">WHAT IS F3?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold font-heading mb-4">WHAT IS F3?</h2>
           <p className="text-lg text-muted-foreground">
             F3 is a national network of free, peer-led workouts for men. Our mission is to plant, grow, and serve small workout groups for men for the invigoration of male community leadership.
           </p>
@@ -44,8 +31,7 @@ export default function Home() {
           <Card className="text-center border-none shadow-none bg-transparent">
             <CardHeader>
               <div className="mx-auto bg-primary/10 p-4 rounded-full mb-4">
-                {/* <Dumbbell className="h-8 w-8 text-primary" /> */}
-                <span className="text-4xl">💪</span>
+                <FitnessIcon className="h-16 w-16 text-primary" />
               </div>
               <CardTitle>Fitness</CardTitle>
             </CardHeader>
@@ -59,8 +45,7 @@ export default function Home() {
           <Card className="text-center border-none shadow-none bg-transparent">
             <CardHeader>
               <div className="mx-auto bg-primary/10 p-4 rounded-full mb-4">
-                {/* <Users className="h-8 w-8 text-primary" /> */}
-                <span className="text-4xl">🤝</span>
+                <FellowshipIcon className="h-16 w-16 text-primary" />
               </div>
               <CardTitle>Fellowship</CardTitle>
             </CardHeader>
@@ -74,8 +59,7 @@ export default function Home() {
           <Card className="text-center border-none shadow-none bg-transparent">
             <CardHeader>
               <div className="mx-auto bg-primary/10 p-4 rounded-full mb-4">
-                {/* <Sunrise className="h-8 w-8 text-primary" /> */}
-                <span className="text-4xl">🙏</span>
+                <FaithIcon className="h-16 w-16 text-primary" />
               </div>
               <CardTitle>Faith</CardTitle>
             </CardHeader>
@@ -88,11 +72,34 @@ export default function Home() {
         </div>
       </Section>
 
-      {/* Highlights / 5 Core Principles */}
+      {/* 2. Who is F3 Marietta? (Moved to second) */}
+      <Section className="text-center bg-muted/30">
+        <div className="flex justify-center mb-8">
+          <div className="relative h-44 w-44 md:h-56 md:w-56 rounded-full overflow-hidden">
+            <Image
+              src="/icons/f3mariettalogo-main.png"
+              alt="F3 Marietta logo"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+        </div>
+        <h2 className="text-2xl md:text-3xl font-bold font-heading mb-6">WHO IS F3 MARIETTA?</h2>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+          F3 Marietta started with the launch of The Battlefield at Marietta Highschool in June 2024. Since then, F3 Marietta has continued to grow, with the official launch of the region in December 2025. We are a growing community of men in Marietta dedicated to becoming better leaders in our families, workplaces, and community.
+        </p>
+        <Button asChild variant="outline" size="lg">
+          <Link href="/about">Read Our Story</Link>
+        </Button>
+      </Section>
+
+
+      {/* 4. Highlights / 5 Core Principles */}
       <Section className="bg-muted/30">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold font-heading mb-6">THE 5 CORE PRINCIPLES</h2>
+            <h2 className="text-2xl md:text-3xl font-bold font-heading mb-6">THE 5 CORE PRINCIPLES</h2>
             <ul className="space-y-4">
               <li className="flex items-center gap-3">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-sm">1</span>
@@ -117,30 +124,22 @@ export default function Home() {
             </ul>
           </div>
           <div className="relative h-[400px] rounded-lg overflow-hidden bg-zinc-800 flex items-center justify-center">
-            {/* Placeholder for image */}
-            <p className="text-muted-foreground">Workout Image Placeholder</p>
+            <img
+              src="/images/HomePage2.jpeg"
+              alt="F3 Marietta Workout"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           </div>
         </div>
       </Section>
 
-      {/* Who We Are Teaser */}
-      <Section className="text-center">
-        <h2 className="text-3xl md:text-4xl font-bold font-heading mb-6">WHO IS F3 MARIETTA?</h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-          Launched in June 2024, we are a growing community of men in Marietta dedicated to becoming better leaders in our families, workplaces, and community.
-        </p>
-        <Button asChild variant="outline" size="lg">
-          <Link href="/about">Read Our Story</Link>
-        </Button>
-      </Section>
-
-      {/* CTA */}
-      <Section className="bg-primary text-primary-foreground text-center py-20">
-        <h2 className="text-3xl md:text-5xl font-bold font-heading mb-6">READY TO JOIN US?</h2>
+      {/* 5. CTA */}
+      <Section className="bg-secondary text-secondary-foreground text-center py-20">
+        <h2 className="text-2xl md:text-4xl font-bold font-heading mb-6">READY TO JOIN US?</h2>
         <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
           No sign-up fees. No catch. Just show up.
         </p>
-        <Button asChild size="lg" variant="secondary" className="text-lg px-8 py-6 font-bold">
+        <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-[#3A5E88] text-lg px-8 py-6 font-bold border-none">
           <Link href="/workouts">Find a Location</Link>
         </Button>
       </Section>
