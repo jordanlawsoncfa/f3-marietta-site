@@ -3,7 +3,6 @@ import OpenAI from "openai";
 import { lexiconEntries, exiconEntries, GlossaryEntry } from "@/../data/f3Glossary";
 import { searchKnowledgeDocs } from "@/../data/f3Knowledge";
 
-// Simple relevance scoring (similar to searchGlossary.ts but server-side)
 // Helper to normalize query and extract core term
 function extractCoreTerm(query: string): string {
     let term = query.toLowerCase().trim();
@@ -49,6 +48,72 @@ function getRelevantEntries(query: string, entries: GlossaryEntry[], limit = 10)
         .map((s) => s.entry);
 }
 
+async function getKnowledgeBaseContext(query: string): Promise<string | null> {
+    try {
+        const relevantLexicon = getRelevantEntries(query, lexiconEntries, 3);
+        const relevantExicon = getRelevantEntries(query, exiconEntries, 3);
+        const relevantDocs = searchKnowledgeDocs(query, 3);
+
+        const allRelevantGlossary = [...relevantLexicon, ...relevantExicon];
+
+        if (relevantDocs.length === 0 && allRelevantGlossary.length === 0) {
+            return null;
+        }
+
+        let contextString = "";
+
+        if (relevantDocs.length > 0) {
+            contextString += "--- F3 KNOWLEDGE DOCS ---\n";
+            contextString += relevantDocs.map(d => `Title: ${d.title}\nContent:\n${d.content}`).join("\n\n");
+            contextString += "\n\n";
+        }
+
+        if (allRelevantGlossary.length > 0) {
+            contextString += "--- F3 GLOSSARY ENTRIES ---\n";
+            contextString += allRelevantGlossary
+                .map((e) => `Term: ${e.term}\nType: ${lexiconEntries.includes(e) ? "Lexicon" : "Exicon"}\nDefinition: ${e.shortDescription}`)
+                .join("\n\n");
+        }
+
+        return contextString;
+    } catch (error) {
+        console.error("Error getting knowledge base context:", error);
+        return null;
+    }
+}
+
+async function callOpenAI(query: string, context: string | null): Promise<string> {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+        throw new Error("OPENAI_API_KEY is not set");
+    }
+
+    const openai = new OpenAI({ apiKey });
+
+    const systemPromptBase = `
+You are the F3 Marietta AI assistant.
+Always answer as helpfully and concisely as possible.
+If you are not sure, be honest and suggest checking f3marietta.com or f3nation.com.
+Focus on F3, F3 Marietta, workouts, locations, Lexicon/Exicon, and FAQ topics.
+`;
+
+    const systemPrompt = context
+        ? `${systemPromptBase}\n\nUse the following F3 Marietta knowledge base context if relevant:\n${context}`
+        : `${systemPromptBase}\n\nYou do not have any special context for this question; answer from your general knowledge of F3.`;
+
+    const completion = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: query },
+        ],
+        max_tokens: 250,
+        temperature: 0.5,
+    });
+
+    return completion.choices[0]?.message?.content || "I couldn't generate an answer at this time.";
+}
+
 export async function POST(request: Request) {
     try {
         const { query } = await request.json();
@@ -85,71 +150,30 @@ export async function POST(request: Request) {
             });
         }
 
-        // 2. No direct match, proceed with OpenAI search using Knowledge Docs + Glossary
-        const apiKey = process.env.OPENAI_API_KEY;
-        if (!apiKey) {
+        // 2. Check API Key
+        if (!process.env.OPENAI_API_KEY) {
             console.error("OPENAI_API_KEY is not set");
             return NextResponse.json(
-                { error: "Service configuration error. Please try again later." },
+                { error: "config_error", message: "OPENAI_API_KEY is not configured on the server." },
                 { status: 500 }
             );
         }
 
-        const openai = new OpenAI({ apiKey });
+        // 3. Get Context
+        const context = await getKnowledgeBaseContext(query);
 
-        // Find relevant context
+        // 4. Call OpenAI
+        const answerText = await callOpenAI(query, context);
+
+        // 5. Build Related Entries/Pages (Best effort based on context)
+        // We can re-run getRelevantEntries locally to populate this if context was null, 
+        // or just use what we found in getKnowledgeBaseContext if we refactored to return it.
+        // For simplicity, let's re-run the cheap local search to populate "related" even if we used fallback.
+
         const relevantLexicon = getRelevantEntries(query, lexiconEntries, 3);
         const relevantExicon = getRelevantEntries(query, exiconEntries, 3);
-        const relevantDocs = searchKnowledgeDocs(query, 3);
-
         const allRelevantGlossary = [...relevantLexicon, ...relevantExicon];
 
-        // Build context string
-        let contextString = "";
-
-        if (relevantDocs.length > 0) {
-            contextString += "--- F3 KNOWLEDGE DOCS ---\n";
-            contextString += relevantDocs.map(d => `Title: ${d.title}\nContent:\n${d.content}`).join("\n\n");
-            contextString += "\n\n";
-        }
-
-        if (allRelevantGlossary.length > 0) {
-            contextString += "--- F3 GLOSSARY ENTRIES ---\n";
-            contextString += allRelevantGlossary
-                .map((e) => `Term: ${e.term}\nType: ${lexiconEntries.includes(e) ? "Lexicon" : "Exicon"}\nDefinition: ${e.shortDescription}`)
-                .join("\n\n");
-        }
-
-        // Call OpenAI with strict prompt
-        const systemPrompt = `You are the official F3 Marietta Assistant.
-
-You must ONLY answer questions using the provided F3 Knowledge Docs and Glossary entries.
-
-Rules:
-- Use ONLY the provided context as your source of truth.
-- Do NOT rely on outside or general world knowledge.
-- If the provided context does not contain an answer, say:
-  "I couldn’t find an answer in the F3 Marietta knowledge base. Try asking about specific terms or check the About page."
-- Do NOT invent definitions or meanings.
-- Stay within the context of F3, workouts, and F3 terminology.
-- Keep answers concise, friendly, and encouraging.
-
-Context:
-${contextString}`;
-
-        const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: query },
-            ],
-            max_tokens: 250,
-            temperature: 0.5, // Lower temperature for more deterministic answers
-        });
-
-        const answerText = completion.choices[0]?.message?.content || "I couldn't generate an answer at this time.";
-
-        // Format related entries
         const relatedEntries = allRelevantGlossary.map((entry) => {
             const isLexicon = lexiconEntries.some((l) => l.id === entry.id);
             const type = isLexicon ? "Lexicon" : "Exicon";
@@ -161,16 +185,23 @@ ${contextString}`;
             };
         });
 
-        // Add related pages if docs were used
-        // This is a simple mapping for now
-        const relatedPages = relevantDocs.map(d => {
-            if (d.id === "about" || d.id === "mission" || d.id === "leadership") return { title: "About Us", url: "/about" };
-            if (d.id === "first-workout") return { title: "New to F3", url: "/fng" };
-            if (d.id === "marietta") return { title: "Community", url: "/community" };
-            return null;
-        }).filter(Boolean);
+        // For related pages, we'd need the docs results. 
+        // Since getKnowledgeBaseContext swallows them, we might miss them here if we don't re-fetch or refactor.
+        // But the user asked for "fallback to plain OpenAI", so missing related links in fallback case is acceptable.
+        // We will try to fetch them again safely.
+        let relatedPages: any[] = [];
+        try {
+            const relevantDocs = searchKnowledgeDocs(query, 3);
+            relatedPages = relevantDocs.map(d => {
+                if (d.id === "about" || d.id === "mission" || d.id === "leadership") return { title: "About Us", url: "/about" };
+                if (d.id === "first-workout") return { title: "New to F3", url: "/fng" };
+                if (d.id === "marietta") return { title: "Community", url: "/community" };
+                return null;
+            }).filter(Boolean);
+        } catch (e) {
+            // Ignore doc search errors for related pages
+        }
 
-        // Deduplicate related pages
         const uniqueRelatedPages = Array.from(new Set(relatedPages.map(p => JSON.stringify(p)))).map(s => JSON.parse(s));
 
         return NextResponse.json({
@@ -178,10 +209,14 @@ ${contextString}`;
             relatedEntries,
             relatedPages: uniqueRelatedPages
         });
+
     } catch (error) {
-        console.error("Error in assistant API:", error);
+        console.error("AMA assistant error:", error);
         return NextResponse.json(
-            { error: "There was a problem answering your question. Please try again." },
+            {
+                error: "assistant_error",
+                message: "Sorry, I had trouble answering that. Please try again in a moment or check the FAQ page."
+            },
             { status: 500 }
         );
     }
