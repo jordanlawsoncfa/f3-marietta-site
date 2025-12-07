@@ -1,8 +1,6 @@
 import { Section } from "@/components/ui/Section";
 import { Hero } from "@/components/ui/Hero";
 import { AOCard } from "@/components/ui/AOCard";
-import { Button } from "@/components/ui/Button";
-import Link from "next/link";
 
 const aos = [
     {
@@ -65,15 +63,6 @@ export default function WorkoutsPage() {
                 </div>
             </section>
 
-            <div className="sticky bottom-4 z-40 flex justify-center w-full pointer-events-none">
-                <div className="bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-lg pointer-events-auto flex items-center gap-4 animate-in slide-in-from-bottom-4 fade-in duration-500">
-                    <span className="font-bold">First time?</span>
-                    <span className="text-sm hidden sm:inline">Just show up 5-10 minutes early and tell them you're an FNG.</span>
-                    <Button asChild size="sm" variant="secondary" className="font-bold">
-                        <Link href="/fng">FAQ</Link>
-                    </Button>
-                </div>
-            </div>
 
         </div>
     );
