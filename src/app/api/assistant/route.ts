@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { lexiconEntries, exiconEntries, GlossaryEntry } from "@/../data/f3Glossary";
 import { searchKnowledgeDocs } from "@/../data/f3Knowledge";
+import { searchGlossaryEntries } from "@/lib/searchGlossary";
 
 // Helper to normalize query and extract core term
 function extractCoreTerm(query: string): string {
@@ -22,30 +23,10 @@ function extractCoreTerm(query: string): string {
     return term.trim();
 }
 
-// Simple relevance scoring (similar to searchGlossary.ts but server-side)
+// Use shared search logic - wrapper for compatibility
 function getRelevantEntries(query: string, entries: GlossaryEntry[], limit = 10): GlossaryEntry[] {
     if (!query) return [];
-    const normalizedQuery = query.toLowerCase().trim();
-
-    const scored = entries.map((entry) => {
-        let score = 0;
-        const term = entry.term.toLowerCase();
-        const shortDesc = entry.shortDescription.toLowerCase();
-        const longDesc = entry.longDescription?.toLowerCase() || "";
-
-        if (term === normalizedQuery) score = 100;
-        else if (term.startsWith(normalizedQuery)) score = 80;
-        else if (term.includes(normalizedQuery)) score = 60;
-        else if (shortDesc.includes(normalizedQuery) || longDesc.includes(normalizedQuery)) score = 30;
-
-        return { entry, score };
-    });
-
-    return scored
-        .filter((s) => s.score > 0)
-        .sort((a, b) => b.score - a.score)
-        .slice(0, limit)
-        .map((s) => s.entry);
+    return searchGlossaryEntries(entries, query).slice(0, limit);
 }
 
 async function getKnowledgeBaseContext(query: string): Promise<string | null> {

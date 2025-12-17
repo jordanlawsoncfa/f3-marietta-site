@@ -1,0 +1,83 @@
+
+import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
+
+export async function GET(request: Request) {
+    const token = request.headers.get("x-admin-token");
+    const adminPassword = process.env.ADMIN_DASHBOARD_PASSWORD;
+
+    if (!adminPassword) {
+        return NextResponse.json(
+            { error: "Admin dashboard not configured" },
+            { status: 500 }
+        );
+    }
+
+    if (token !== adminPassword) {
+        return NextResponse.json(
+            { error: "Unauthorized" },
+            { status: 401 }
+        );
+    }
+
+    const baseDirs = ["data/content"]; // Focusing on the new structure
+    const files: any[] = [];
+    const folders: string[] = [];
+
+    for (const dir of baseDirs) {
+        const dirPath = path.join(process.cwd(), dir);
+        if (fs.existsSync(dirPath)) {
+            try {
+                // We want to list files in subdirectories (faq, lexicon, etc.)
+                const subdirs = fs.readdirSync(dirPath, { withFileTypes: true });
+
+                for (const subdir of subdirs) {
+                    if (subdir.isDirectory()) {
+                        const folderName = subdir.name;
+                        folders.push(folderName);
+
+                        const folderPath = path.join(dirPath, folderName);
+                        const entries = fs.readdirSync(folderPath, { withFileTypes: true });
+
+                        for (const entry of entries) {
+                            if (entry.isFile() && entry.name.endsWith(".md") && entry.name !== "README.md") {
+                                const fullPath = path.join(folderPath, entry.name);
+                                const relativePath = path.relative(process.cwd(), fullPath);
+                                const slug = entry.name.replace(".md", "");
+
+                                let metadata: any = {
+                                    title: slug, // Default to slug if no title
+                                    category: folderName,
+                                    tags: []
+                                };
+
+                                try {
+                                    const fileContent = fs.readFileSync(fullPath, "utf-8");
+                                    const { data } = matter(fileContent);
+                                    metadata = { ...metadata, ...data };
+                                } catch (e) {
+                                    console.error(`Error parsing frontmatter for ${relativePath}`, e);
+                                }
+
+                                files.push({
+                                    path: relativePath,
+                                    folder: folderName,
+                                    slug: slug,
+                                    title: metadata.title,
+                                    category: metadata.category,
+                                    tags: metadata.tags || []
+                                });
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error(`Error reading directory ${dir}:`, e);
+            }
+        }
+    }
+
+    return NextResponse.json({ files, folders: folders.sort() });
+}

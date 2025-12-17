@@ -8,6 +8,13 @@ import { cn } from "@/lib/utils";
 
 export function FloatingAssistant() {
     const [isOpen, setIsOpen] = useState(false);
+    const [sessionKey, setSessionKey] = useState(0);
+
+    const handleClose = () => {
+        setIsOpen(false);
+        // Increment session key to reset widget state on next open
+        setSessionKey((prev) => prev + 1);
+    };
 
     return (
         <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end sm:bottom-8 sm:right-8">
@@ -29,7 +36,7 @@ export function FloatingAssistant() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => setIsOpen(false)}
+                        onClick={handleClose}
                         className="h-8 w-8 rounded-full hover:bg-background/80"
                     >
                         <X className="h-4 w-4" />
@@ -39,13 +46,13 @@ export function FloatingAssistant() {
 
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto p-4">
-                    <AssistantWidget compact />
+                    <AssistantWidget key={sessionKey} compact />
                 </div>
             </div>
 
             {/* Toggle Button */}
             <Button
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => isOpen ? handleClose() : setIsOpen(true)}
                 size="lg"
                 className={cn(
                     "rounded-full shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 px-6 py-3 h-auto",
