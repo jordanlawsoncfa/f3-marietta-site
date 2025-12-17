@@ -12,6 +12,7 @@ const navItems = [
     { name: "F3 Terms", href: "/glossary" },
     { name: "Community", href: "/community" },
     { name: "FAQ", href: "/fng" },
+    { name: "What to Expect", href: "/what-to-expect" },
     { name: "Contact Us", href: "/contact" },
     { name: "F3 Gear", href: "https://f3gear.com/", external: true },
 ];
