@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-// import { Menu, X, Home } from "lucide-react"; // Assuming lucide is available
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
+
 
 const navItems = [
     { name: "Home", href: "/" },

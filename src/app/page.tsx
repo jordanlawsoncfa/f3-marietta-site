@@ -5,7 +5,7 @@ import { Section } from "@/components/ui/Section";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { FitnessIcon, FellowshipIcon, FaithIcon } from "@/components/ui/F3Icons";
-// import { Dumbbell, Users, Sunrise } from "lucide-react";
+
 
 export default function Home() {
   return (
