@@ -32,8 +32,8 @@ export function Footer() {
                         <h3 className="font-bold mb-4">Connect</h3>
                         <ul className="space-y-2">
                             <li><Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact Us</Link></li>
-                            <li><a href="https://twitter.com/f3nation" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">Twitter / X</a></li>
-                            <li><a href="https://instagram.com/f3nation" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">Instagram</a></li>
+                            <li><a href="https://www.facebook.com/people/F3-Marietta/61585217978212/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">Facebook</a></li>
+                            <li><a href="https://www.instagram.com/f3marietta/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">Instagram</a></li>
                         </ul>
                     </div>
                 </div>
