@@ -110,7 +110,7 @@ export function AssistantWidget({
                             className={cn(
                                 "w-full border border-input bg-background text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-muted-foreground",
                                 isPageVariant
-                                    ? "px-6 py-4 text-lg rounded-full pr-32"
+                                    ? "px-4 sm:px-6 py-4 text-base sm:text-lg rounded-full pr-20 sm:pr-32"
                                     : "px-4 py-3 pr-12 text-base rounded-lg"
                             )}
                         />
@@ -151,7 +151,7 @@ export function AssistantWidget({
                 {!response && !isLoading && (
                     <div className={cn(
                         "grid gap-2",
-                        isPageVariant ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-2"
+                        isPageVariant ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2"
                     )}>
                         {displayedQuestions.map((q) => (
                             <button
