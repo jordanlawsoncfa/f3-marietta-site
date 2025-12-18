@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingAssistant } from "@/components/ui/FloatingAssistant";
+import { ReleaseNotes } from "@/components/ui/ReleaseNotes";
 
 export default function RootLayout({
   children,
@@ -37,6 +38,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <FloatingAssistant />
+        <ReleaseNotes />
       </body>
     </html>
   );

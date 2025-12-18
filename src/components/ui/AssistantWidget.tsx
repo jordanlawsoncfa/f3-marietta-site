@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
@@ -26,6 +26,17 @@ export function AssistantWidget({
     const [isLoading, setIsLoading] = useState(false);
     const [response, setResponse] = useState<AssistantResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
+
+    // Start with first 4 questions for SSR consistency, then randomize on client
+    const [displayedQuestions, setDisplayedQuestions] = useState(() =>
+        EXAMPLE_QUESTIONS.slice(0, 4)
+    );
+
+    useEffect(() => {
+        // Randomize questions on client-side mount to avoid hydration mismatch
+        const shuffled = [...EXAMPLE_QUESTIONS].sort(() => Math.random() - 0.5);
+        setDisplayedQuestions(shuffled.slice(0, 4));
+    }, []);
 
     const isPageVariant = variant === "page";
 
@@ -138,14 +149,17 @@ export function AssistantWidget({
 
                 {/* Example Questions */}
                 {!response && !isLoading && (
-                    <div className="flex flex-wrap justify-center gap-2">
-                        {EXAMPLE_QUESTIONS.map((q) => (
+                    <div className={cn(
+                        "grid gap-2",
+                        isPageVariant ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-2"
+                    )}>
+                        {displayedQuestions.map((q) => (
                             <button
                                 key={q}
                                 onClick={() => handleSearch(q)}
                                 className={cn(
-                                    "bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-full transition-colors text-muted-foreground hover:text-foreground",
-                                    isPageVariant ? "text-sm" : "text-xs text-left"
+                                    "bg-muted/50 hover:bg-muted px-3 py-2 rounded-lg transition-colors text-muted-foreground hover:text-foreground text-left",
+                                    isPageVariant ? "text-sm" : "text-xs"
                                 )}
                             >
                                 {q}

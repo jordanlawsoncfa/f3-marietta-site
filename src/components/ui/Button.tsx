@@ -23,11 +23,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
         if (asChild && React.isValidElement(props.children)) {
             const child = React.Children.only(props.children) as React.ReactElement<any>;
+            // Only pass className to the child - do NOT spread all props
+            // Spreading props.children onto the Link causes nested <a> tags
             return React.cloneElement(child, {
                 className: cn(baseStyles, variants[variant], sizes[size], className, child.props.className),
-                ...props,
-                // We shouldn't pass all props to child if they are button props?
-                // But for Link it's fine.
             });
         }
 
