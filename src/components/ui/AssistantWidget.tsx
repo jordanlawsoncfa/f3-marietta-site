@@ -72,6 +72,7 @@ export function AssistantWidget({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        e.stopPropagation();
         handleSearch(query);
     };
 

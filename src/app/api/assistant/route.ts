@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { randomUUID } from "crypto";
 import { lexiconEntries, exiconEntries, GlossaryEntry } from "@/../data/f3Glossary";
 import { searchKnowledgeDocs } from "@/../data/f3Knowledge";
 import { searchGlossaryEntries } from "@/lib/searchGlossary";
+
+// Force Node.js runtime (not Edge) for OpenAI and fs compatibility
+export const runtime = "nodejs";
 
 // Helper to normalize query and extract core term
 function extractCoreTerm(query: string): string {
@@ -96,12 +100,17 @@ Focus on F3, F3 Marietta, workouts, locations, Lexicon/Exicon, and FAQ topics.
 }
 
 export async function POST(request: Request) {
+    const requestId = randomUUID().slice(0, 8);
+
     try {
         const { query } = await request.json();
 
         if (!query || typeof query !== "string") {
+            console.log(`[${requestId}] Invalid query received`);
             return NextResponse.json({ error: "Invalid query" }, { status: 400 });
         }
+
+        console.log(`[${requestId}] Assistant request: "${query.slice(0, 50)}${query.length > 50 ? '...' : ''}"`);
 
         // 1. Normalize and check for direct match
         const coreTerm = extractCoreTerm(query);
@@ -133,10 +142,10 @@ export async function POST(request: Request) {
 
         // 2. Check API Key
         if (!process.env.OPENAI_API_KEY) {
-            console.error("OPENAI_API_KEY is not set");
+            console.error(`[${requestId}] OPENAI_API_KEY is not set`);
             return NextResponse.json(
-                { error: "config_error", message: "OPENAI_API_KEY is not configured on the server." },
-                { status: 500 }
+                { error: "service_unavailable", message: "The AI assistant is temporarily unavailable. Please try again later." },
+                { status: 503 }
             );
         }
 
@@ -192,7 +201,7 @@ export async function POST(request: Request) {
         });
 
     } catch (error) {
-        console.error("AMA assistant error:", error);
+        console.error(`[${requestId}] AMA assistant error:`, error);
         return NextResponse.json(
             {
                 error: "assistant_error",
