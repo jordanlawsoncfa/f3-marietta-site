@@ -1,0 +1,24 @@
+---
+title: Copperhead Squat
+category: Exercise
+tags:
+  - Legs
+aliases: []
+---
+
+### Definition
+Slow, controlled squat.
+
+### How it's done
+1. Hands behind head
+2. Lower into squat slowly in cadence
+3. Then rise
+
+### Variations
+- Squat
+
+### Notes
+Focus on depth.
+
+### Related terms
+- Squat

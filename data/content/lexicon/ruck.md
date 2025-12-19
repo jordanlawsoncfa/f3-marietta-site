@@ -1,0 +1,22 @@
+---
+title: Ruck
+category: Term
+tags:
+  - Exercise
+aliases: []
+---
+
+### Definition
+To walk with a weighted rucksack or backpack.
+
+### How it's used
+A primary mode of First F that allows for more mumble chatter while working.
+
+### Variations
+- Rucking
+
+### Notes
+Great for building stamina.
+
+### Related terms
+- Coupon

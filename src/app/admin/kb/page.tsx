@@ -393,10 +393,11 @@ TBD
             groups[f] = [];
         });
 
-        const filtered = files.filter(f =>
-            f.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            f.slug.includes(searchQuery.toLowerCase())
-        );
+        const filtered = files.filter(f => {
+            const title = typeof f.title === 'string' ? f.title : String(f.title || '');
+            return title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                f.slug.includes(searchQuery.toLowerCase());
+        });
 
         filtered.forEach(f => {
             if (!groups[f.folder]) groups[f.folder] = [];
@@ -405,7 +406,11 @@ TBD
 
         // Sort keys (folders)
         return Object.keys(groups).sort().reduce((acc, key) => {
-            acc[key] = groups[key].sort((a, b) => a.title.localeCompare(b.title));
+            acc[key] = groups[key].sort((a, b) => {
+                const titleA = typeof a.title === 'string' ? a.title : String(a.title || '');
+                const titleB = typeof b.title === 'string' ? b.title : String(b.title || '');
+                return titleA.localeCompare(titleB);
+            });
             return acc;
         }, {} as Record<string, KBFile[]>);
     }, [files, folders, searchQuery]);
