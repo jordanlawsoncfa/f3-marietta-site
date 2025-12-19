@@ -109,6 +109,17 @@ function determineEntryType(folder: string): 'lexicon' | 'exicon' | 'other' {
 }
 
 export async function rebuildVectorIndex() {
+    // Skip in production - Vercel has a read-only file system
+    // The glossary is regenerated during build time via npm run regenerate-glossary
+    if (process.env.NODE_ENV === 'production' || process.env.VERCEL) {
+        console.log('⏭️ Skipping glossary rebuild in production (read-only file system)');
+        return {
+            success: true,
+            message: 'Skipped in production - glossary is regenerated at build time',
+            skipped: true
+        };
+    }
+
     console.log('🔄 Rebuilding glossary from Knowledge Base...');
 
     try {
