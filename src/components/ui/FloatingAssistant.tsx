@@ -30,6 +30,7 @@ export function FloatingAssistant() {
             <div className="fixed bottom-0 left-0 right-0 sm:bottom-8 sm:right-8 sm:left-auto z-50 flex flex-col items-center sm:items-end">
                 {/* Chat Panel */}
                 <div
+                    onClick={(e) => e.stopPropagation()}
                     className={cn(
                         "w-full sm:w-[400px] sm:mb-4 rounded-t-2xl sm:rounded-xl border border-border bg-muted shadow-2xl transition-all duration-300 origin-bottom overflow-hidden flex flex-col",
                         // Mobile: slide up from bottom, Desktop: scale from bottom-right
