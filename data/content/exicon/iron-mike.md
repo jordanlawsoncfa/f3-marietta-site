@@ -1,0 +1,24 @@
+---
+title: Iron Mike
+category: Exercise
+tags:
+  - Legs
+aliases:
+  - Jump Lunge
+---
+
+### Definition
+Explosive jumping lunges.
+
+### How it's done
+1. Perform a lunge
+2. Jump explosively to switch leg positions in mid-air
+
+### Variations
+- Bonnie Blairs
+
+### Notes
+High intensity.
+
+### Related terms
+- Bonnie Blair

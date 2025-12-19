@@ -1,0 +1,23 @@
+---
+title: Crawl Bear
+category: Exercise
+tags:
+  - Transport
+aliases: []
+---
+
+### Definition
+Backwards bear crawl.
+
+### How it's done
+1. Move backwards on hands and feet
+2. Keep knees low to ground
+
+### Variations
+- Bear Crawl
+
+### Notes
+Difficult for the shoulders.
+
+### Related terms
+- Bear Crawl

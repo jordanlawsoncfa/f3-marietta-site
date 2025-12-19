@@ -1,0 +1,23 @@
+---
+title: Crab Walk
+category: Exercise
+tags:
+  - Transport
+aliases: []
+---
+
+### Definition
+Reverse all-fours transport.
+
+### How it's done
+1. Facing the sky
+2. Move on hands and feet with hips high
+
+### Variations
+- Bear Crawl
+
+### Notes
+Keep hips up.
+
+### Related terms
+- Bear Crawl

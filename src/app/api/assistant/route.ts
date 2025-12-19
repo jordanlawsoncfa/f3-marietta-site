@@ -12,8 +12,17 @@ export const runtime = "nodejs";
 function extractCoreTerm(query: string): string {
     let term = query.toLowerCase().trim();
 
-    // Remove common question prefixes
-    const prefixes = ["what is a ", "what is ", "what's a ", "what's ", "whats a ", "whats ", "define "];
+    // Remove common question prefixes (order matters - longer prefixes first)
+    const prefixes = [
+        "what is an ", "what is a ", "what is the ", "what is ",
+        "what's an ", "what's a ", "what's the ", "what's ",
+        "whats an ", "whats a ", "whats the ", "whats ",
+        "define the ", "define a ", "define an ", "define ",
+        "tell me about the ", "tell me about a ", "tell me about an ", "tell me about ",
+        "explain the ", "explain a ", "explain an ", "explain ",
+        "how do i ", "how do you ", "how does ", "how to ",
+        "what are ", "who is ", "who are ",
+    ];
     for (const prefix of prefixes) {
         if (term.startsWith(prefix)) {
             term = term.slice(prefix.length);
@@ -24,8 +33,12 @@ function extractCoreTerm(query: string): string {
     // Remove trailing punctuation
     term = term.replace(/[?.,!]+$/, "");
 
+    // Remove any remaining leading articles
+    term = term.replace(/^(a |an |the )/, "");
+
     return term.trim();
 }
+
 
 // Use shared search logic - wrapper for compatibility
 function getRelevantEntries(query: string, entries: GlossaryEntry[], limit = 10): GlossaryEntry[] {
