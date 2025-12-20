@@ -8,9 +8,28 @@ import { searchGlossaryEntries } from "@/lib/searchGlossary";
 // Force Node.js runtime (not Edge) for OpenAI and fs compatibility
 export const runtime = "nodejs";
 
+// Helper to normalize mobile keyboard quirks (smart quotes, special whitespace, etc.)
+function normalizeQuery(input: string): string {
+    return input
+        // Smart quotes and curly apostrophes → straight versions
+        .replace(/[\u2018\u2019\u201A\u201B]/g, "'")  // Single curly quotes
+        .replace(/[\u201C\u201D\u201E\u201F]/g, '"')  // Double curly quotes
+        .replace(/[\u2032\u2035]/g, "'")              // Prime marks
+        // Special whitespace → regular space
+        .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, ' ')
+        // Normalize dashes
+        .replace(/[\u2013\u2014\u2015]/g, '-')
+        // Remove zero-width characters
+        .replace(/[\u200B-\u200D\uFEFF]/g, '')
+        // Collapse multiple spaces
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 // Helper to normalize query and extract core term
 function extractCoreTerm(query: string): string {
-    let term = query.toLowerCase().trim();
+    // First normalize mobile keyboard quirks
+    let term = normalizeQuery(query).toLowerCase();
 
     // Remove common question prefixes (order matters - longer prefixes first)
     const prefixes = [
@@ -129,9 +148,16 @@ export async function POST(request: Request) {
         const coreTerm = extractCoreTerm(query);
         const allEntries = [...lexiconEntries, ...exiconEntries];
 
+        // Debug logging to diagnose mobile vs desktop matching issues
+        console.log(`[${requestId}] Raw query: "${query}"`);
+        console.log(`[${requestId}] Extracted coreTerm: "${coreTerm}"`);
+        console.log(`[${requestId}] Query char codes: ${[...query].map(c => c.charCodeAt(0)).join(',')}`);
+
         const directMatch = allEntries.find(
             (e) => e.term.toLowerCase() === coreTerm
         );
+
+        console.log(`[${requestId}] Direct match found: ${directMatch ? directMatch.term : 'none'}`);
 
         if (directMatch) {
             // Direct match found! Return immediately without OpenAI.
