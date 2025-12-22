@@ -99,6 +99,9 @@ export default function Home() {
       <Section className="bg-muted/30">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
+            <blockquote className="text-lg md:text-xl italic text-muted-foreground border-l-4 border-primary pl-4 mb-6">
+              "Leave no man behind, but leave no man where you found him."
+            </blockquote>
             <h2 className="text-2xl md:text-3xl font-bold font-heading mb-6">THE 5 CORE PRINCIPLES</h2>
             <ul className="space-y-4">
               <li className="flex items-center gap-3">
