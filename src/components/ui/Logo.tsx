@@ -18,7 +18,7 @@ export function Logo({ className, size = "md" }: LogoProps) {
         <Link href="/" className={cn("block relative shrink-0", className)}>
             <div
                 className={cn(
-                    "relative overflow-hidden rounded-full bg-white",
+                    "relative overflow-hidden rounded-full",
                     sizeClasses[size]
                 )}
             >
