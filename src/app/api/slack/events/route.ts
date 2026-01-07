@@ -83,26 +83,33 @@ export async function POST(request: NextRequest) {
 async function handleSlackEvent(event: SlackEvent, rawPayload: string) {
     const { type, subtype, channel, ts } = event;
 
+    console.log('handleSlackEvent called:', { type, subtype, channel, ts });
+    console.log('Event text preview:', event.text?.substring(0, 100));
+
     // Only process message events
     if (type !== 'message') {
+        console.log('Not a message event, ignoring');
         return;
     }
 
     // Check if this channel is in our allowlist
     const aoChannel = await getAOChannel(channel);
     if (!aoChannel) {
-        // Not an AO channel we're tracking
+        console.log('Channel not in allowlist:', channel);
         return;
     }
+    console.log('Channel matched:', aoChannel.ao_display_name);
 
     // Handle message deletion
     if (subtype === 'message_deleted' && event.previous_message) {
+        console.log('Processing message deletion');
         await handleMessageDeleted(channel, event.previous_message.ts);
         return;
     }
 
     // Handle message edit
     if (subtype === 'message_changed' && event.message) {
+        console.log('Processing message edit');
         await handleMessageUpsert(
             channel,
             event.message.ts,
@@ -117,12 +124,15 @@ async function handleSlackEvent(event: SlackEvent, rawPayload: string) {
     // Handle new message (no subtype or bot_message)
     if (!subtype || subtype === 'bot_message') {
         const text = event.text || '';
+        console.log('Processing new message, text length:', text.length);
 
         // Check if this looks like a backblast
         if (!isBackblastMessage(text)) {
+            console.log('Not a backblast, ignoring');
             return;
         }
 
+        console.log('Message identified as backblast, upserting...');
         await handleMessageUpsert(
             channel,
             ts,

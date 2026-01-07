@@ -152,26 +152,37 @@ function cleanSlackMention(text: string): string {
 
 /**
  * Check if a message text appears to be a backblast
+ * Must explicitly contain "Backblast" (not "Preblast" or other variants)
  */
 export function isBackblastMessage(text: string): boolean {
-    if (!text) return false;
+    if (!text) {
+        console.log('isBackblastMessage: No text provided');
+        return false;
+    }
 
     const lowerText = text.toLowerCase();
 
-    // Check for "Backblast" at the start
+    // Explicitly exclude preblasts
+    if (lowerText.startsWith('preblast')) {
+        console.log('isBackblastMessage: Detected Preblast, ignoring');
+        return false;
+    }
+
+    // Check for "Backblast" at the start (most common F3 Nation app format)
     if (lowerText.startsWith('backblast')) {
+        console.log('isBackblastMessage: Detected Backblast! at start');
         return true;
     }
 
-    // Check for presence of key fields
-    const hasDate = /\bdate:/i.test(text);
-    const hasAo = /\bao:/i.test(text);
-    const hasPax = /\bpax:/i.test(text);
-    const hasQ = /\bq:/i.test(text);
+    // Check if "backblast" appears anywhere in the first line
+    const firstLine = text.split('\n')[0].toLowerCase();
+    if (firstLine.includes('backblast') && !firstLine.includes('preblast')) {
+        console.log('isBackblastMessage: Detected Backblast in first line');
+        return true;
+    }
 
-    // If has at least 3 of the key fields, likely a backblast
-    const fieldCount = [hasDate, hasAo, hasPax, hasQ].filter(Boolean).length;
-    return fieldCount >= 3;
+    console.log('isBackblastMessage: No backblast pattern found');
+    return false;
 }
 
 /**
