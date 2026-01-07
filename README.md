@@ -7,7 +7,91 @@ This is the official marketing website for F3 Marietta, a region of F3 Nation.
 - **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4
+- **Database**: Supabase (PostgreSQL)
 - **Deployment**: Vercel (Recommended)
+
+## Backblasts Feature Setup
+
+The Backblasts feature automatically ingests workout recaps from Slack and displays them on the website.
+
+### 1. Create Supabase Project
+
+1. Go to [supabase.com](https://supabase.com) and sign up
+2. Click **New Project**
+3. Configure:
+   - **Organization**: Create one (e.g., "F3 Marietta")
+   - **Project name**: `f3-marietta`
+   - **Database Password**: Generate and save securely
+   - **Region**: East US
+4. Click **Create new project** (takes ~2 minutes)
+
+### 2. Run Database Migration
+
+1. In Supabase, go to **SQL Editor**
+2. Copy contents of `supabase/migrations/20260106_backblasts_schema.sql`
+3. Paste and run in SQL Editor
+4. Verify tables in **Table Editor**: `ao_channels`, `backblasts`
+
+### 3. Configure AO Channels
+
+In Supabase SQL Editor, update the `ao_channels` table with your actual Slack channel IDs:
+
+```sql
+UPDATE ao_channels SET slack_channel_id = 'C0123456789' WHERE ao_display_name = 'The Battlefield';
+-- Repeat for each AO channel
+```
+
+To find Slack channel IDs: Right-click channel → View channel details → scroll to bottom.
+
+### 4. Create Slack App
+
+1. Go to [api.slack.com/apps](https://api.slack.com/apps)
+2. Click **Create New App** → **From scratch**
+3. Name: `F3 Marietta Backblasts`, Workspace: Your F3 workspace
+4. Configure:
+
+**OAuth & Permissions** → Add scopes:
+- `channels:history` - Read messages
+- `channels:read` - List channels
+
+**Event Subscriptions**:
+- Enable Events: ON
+- Request URL: `https://your-domain.vercel.app/api/slack/events`
+- Subscribe to bot events:
+  - `message.channels`
+
+5. **Install to Workspace** (OAuth & Permissions page)
+6. Copy **Bot User OAuth Token** (starts with `xoxb-`)
+7. Copy **Signing Secret** (Basic Information page)
+
+### 5. Environment Variables
+
+Add to `.env.local` (local) and Vercel dashboard (production):
+
+```bash
+SUPABASE_URL=https://xxxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...
+SLACK_SIGNING_SECRET=xxxxx
+SLACK_BOT_TOKEN=xoxb-xxxxx
+```
+
+Get Supabase values from: **Settings** → **API**
+
+### 6. Invite Bot to Channels
+
+In Slack, invite your bot to each AO channel:
+```
+/invite @F3 Marietta Backblasts
+```
+
+### Local Testing with ngrok
+
+1. Install ngrok: `brew install ngrok`
+2. Start dev server: `npm run dev`
+3. Start tunnel: `ngrok http 3000`
+4. Update Slack Event Subscriptions URL to ngrok URL + `/api/slack/events`
+5. Post a test backblast in a configured channel
+6. Check `/backblasts` page
 
 ## Getting Started
 
