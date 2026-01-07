@@ -10,10 +10,22 @@ export function verifySlackSignature(
     timestamp: string,
     body: string
 ): boolean {
+    // Debug logging
+    console.log('Verifying Slack signature...');
+    console.log('Timestamp:', timestamp);
+    console.log('Signature received:', signature?.substring(0, 20) + '...');
+    console.log('Body length:', body?.length);
+    console.log('Signing secret length:', signingSecret?.length);
+
     // Prevent replay attacks - reject requests older than 5 minutes
-    const fiveMinutesAgo = Math.floor(Date.now() / 1000) - 60 * 5;
-    if (parseInt(timestamp, 10) < fiveMinutesAgo) {
-        console.warn('Slack request timestamp too old');
+    const now = Math.floor(Date.now() / 1000);
+    const fiveMinutesAgo = now - 60 * 5;
+    const requestTimestamp = parseInt(timestamp, 10);
+
+    console.log('Current time:', now, 'Request time:', requestTimestamp, 'Diff:', now - requestTimestamp);
+
+    if (requestTimestamp < fiveMinutesAgo) {
+        console.warn('Slack request timestamp too old:', now - requestTimestamp, 'seconds');
         return false;
     }
 
@@ -25,13 +37,19 @@ export function verifySlackSignature(
     hmac.update(sigBaseString);
     const computedSignature = `v0=${hmac.digest('hex')}`;
 
+    console.log('Computed signature:', computedSignature.substring(0, 20) + '...');
+    console.log('Signatures match:', signature === computedSignature);
+
     // Use timing-safe comparison to prevent timing attacks
     try {
-        return crypto.timingSafeEqual(
+        const result = crypto.timingSafeEqual(
             Buffer.from(signature),
             Buffer.from(computedSignature)
         );
-    } catch {
+        console.log('timingSafeEqual result:', result);
+        return result;
+    } catch (err) {
+        console.error('timingSafeEqual error:', err);
         return false;
     }
 }
