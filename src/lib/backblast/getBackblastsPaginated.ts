@@ -1,8 +1,20 @@
 import { supabase } from '@/lib/supabase';
-import { Backblast } from '@/types/backblast';
+import type { F3Event, EventKind } from '@/types/f3Event';
+
+export interface F3EventRow {
+    id: string;
+    ao_display_name: string | null;
+    event_kind: EventKind;
+    title: string | null;
+    event_date: string | null;
+    q_name: string | null;
+    pax_count: number | null;
+    content_text: string | null;
+    content_html: string | null;
+}
 
 export interface PaginatedBackblastsResult {
-    rows: Backblast[];
+    rows: F3EventRow[];
     total: number;
     page: number;
     pageSize: number;
@@ -14,10 +26,12 @@ export interface GetBackblastsOptions {
     pageSize?: number;
     ao?: string;
     search?: string;
+    eventKind?: EventKind;
 }
 
 /**
- * Fetch backblasts with server-side pagination
+ * Fetch F3 events with server-side pagination
+ * Now reads from the canonical f3_events table
  */
 export async function getBackblastsPaginated(
     options: GetBackblastsOptions = {}
@@ -27,18 +41,24 @@ export async function getBackblastsPaginated(
         pageSize = 50,
         ao,
         search,
+        eventKind,
     } = options;
 
     // Calculate offset for pagination
     const offset = (page - 1) * pageSize;
 
-    // Build the base query
+    // Build the base query - now using f3_events table
     let query = supabase
-        .from('backblasts')
-        .select('*', { count: 'exact' })
+        .from('f3_events')
+        .select('id, ao_display_name, event_kind, title, event_date, q_name, pax_count, content_text, content_html', { count: 'exact' })
         .eq('is_deleted', false)
-        .order('backblast_date', { ascending: false, nullsFirst: false })
+        .order('event_date', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false });
+
+    // Apply event kind filter (optional - default shows all)
+    if (eventKind) {
+        query = query.eq('event_kind', eventKind);
+    }
 
     // Apply AO filter
     if (ao) {
@@ -48,7 +68,7 @@ export async function getBackblastsPaginated(
     // Apply search filter across multiple columns
     if (search) {
         query = query.or(
-            `q_name.ilike.%${search}%,ao_display_name.ilike.%${search}%,content_text.ilike.%${search}%`
+            `q_name.ilike.%${search}%,ao_display_name.ilike.%${search}%,content_text.ilike.%${search}%,title.ilike.%${search}%`
         );
     }
 
@@ -58,7 +78,7 @@ export async function getBackblastsPaginated(
     const { data, error, count } = await query;
 
     if (error) {
-        console.error('Error fetching backblasts:', error);
+        console.error('Error fetching f3_events:', error);
         return {
             rows: [],
             total: 0,
@@ -72,7 +92,7 @@ export async function getBackblastsPaginated(
     const totalPages = Math.ceil(total / pageSize);
 
     return {
-        rows: data || [],
+        rows: (data || []) as F3EventRow[],
         total,
         page,
         pageSize,
@@ -85,7 +105,7 @@ export async function getBackblastsPaginated(
  */
 export async function getAOList(): Promise<string[]> {
     const { data, error } = await supabase
-        .from('backblasts')
+        .from('f3_events')
         .select('ao_display_name')
         .eq('is_deleted', false)
         .not('ao_display_name', 'is', null);

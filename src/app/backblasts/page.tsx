@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Hero } from '@/components/ui/Hero';
 import { Section } from '@/components/ui/Section';
 import { getBackblastsPaginated, getAOList, createExcerpt } from '@/lib/backblast/getBackblastsPaginated';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Users, MapPin, User } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -31,7 +31,7 @@ export default async function BackblastsPage({ searchParams }: BackblastsPagePro
         getAOList(),
     ]);
 
-    const { rows: backblasts, total, totalPages } = result;
+    const { rows: events, total, totalPages } = result;
     const startRow = (page - 1) * pageSize + 1;
     const endRow = Math.min(page * pageSize, total);
 
@@ -63,6 +63,17 @@ export default async function BackblastsPage({ searchParams }: BackblastsPagePro
         return `/backblasts${qs ? `?${qs}` : ''}`;
     };
 
+    // Format date helper
+    const formatDate = (dateStr: string | null) => {
+        if (!dateStr) return null;
+        return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        });
+    };
+
     return (
         <div className="flex flex-col min-h-screen">
             <Hero
@@ -74,13 +85,13 @@ export default async function BackblastsPage({ searchParams }: BackblastsPagePro
             <Section>
                 <div className="max-w-6xl mx-auto">
                     {/* Controls Row */}
-                    <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                    <div className="mb-8 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
                         {/* Filters */}
                         <form className="flex gap-3 flex-wrap items-center">
                             <select
                                 name="ao"
                                 defaultValue={aoFilter}
-                                className="bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-primary focus:border-primary"
+                                className="bg-card border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:ring-2 focus:ring-primary focus:border-primary min-w-[140px]"
                             >
                                 <option value="">All AOs</option>
                                 {aoList.map((ao) => (
@@ -95,22 +106,22 @@ export default async function BackblastsPage({ searchParams }: BackblastsPagePro
                                 name="q"
                                 placeholder="Search Q, AO, or content..."
                                 defaultValue={searchQuery}
-                                className="bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary w-[220px]"
+                                className="bg-card border border-border rounded-lg px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary focus:border-primary w-[260px]"
                             />
 
                             <button
                                 type="submit"
-                                className="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
+                                className="bg-primary text-primary-foreground px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm"
                             >
-                                Filter
+                                Search
                             </button>
 
                             {(aoFilter || searchQuery) && (
                                 <Link
                                     href="/backblasts"
-                                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                    className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
                                 >
-                                    Clear
+                                    Clear filters
                                 </Link>
                             )}
                         </form>
@@ -122,9 +133,9 @@ export default async function BackblastsPage({ searchParams }: BackblastsPagePro
                                 <Link
                                     key={size}
                                     href={buildUrl({ pageSize: size, page: 1 })}
-                                    className={`px-2 py-1 rounded ${pageSize === size
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                                    className={`px-3 py-1.5 rounded-md font-medium ${pageSize === size
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                                         } transition-colors`}
                                 >
                                     {size}
@@ -134,133 +145,102 @@ export default async function BackblastsPage({ searchParams }: BackblastsPagePro
                     </div>
 
                     {/* Results count */}
-                    <p className="text-sm text-muted-foreground mb-4">
+                    <p className="text-sm text-muted-foreground mb-6">
                         {total === 0 ? (
-                            'No backblasts found'
+                            'No events found'
                         ) : (
                             <>
-                                Showing {startRow}–{endRow} of {total} backblast{total !== 1 ? 's' : ''}
+                                Showing {startRow}–{endRow} of {total} event{total !== 1 ? 's' : ''}
                                 {aoFilter && ` in ${aoFilter}`}
                                 {searchQuery && ` matching "${searchQuery}"`}
                             </>
                         )}
                     </p>
 
-                    {/* Table */}
-                    {backblasts.length === 0 ? (
-                        <div className="text-center py-16 bg-card rounded-lg border border-border">
-                            <p className="text-lg text-muted-foreground">No backblasts found.</p>
+                    {/* Events List */}
+                    {events.length === 0 ? (
+                        <div className="text-center py-20 bg-card rounded-xl border border-border">
+                            <p className="text-lg text-muted-foreground">No events found.</p>
                             <p className="text-sm text-muted-foreground mt-2">
                                 Check back after workouts are posted in Slack!
                             </p>
                         </div>
                     ) : (
                         <>
-                            {/* Desktop Table */}
-                            <div className="hidden md:block overflow-x-auto">
-                                <table className="w-full border-collapse">
-                                    <thead>
-                                        <tr className="border-b border-border bg-muted/30 sticky top-0">
-                                            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                                Date
-                                            </th>
-                                            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                                AO
-                                            </th>
-                                            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                                Q
-                                            </th>
-                                            <th className="text-center py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                                PAX
-                                            </th>
-                                            <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                                                Excerpt
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {backblasts.map((bb, idx) => {
-                                            const formattedDate = bb.backblast_date
-                                                ? new Date(bb.backblast_date + 'T00:00:00').toLocaleDateString('en-US', {
-                                                    month: 'short',
-                                                    day: 'numeric',
-                                                    year: 'numeric',
-                                                })
-                                                : '—';
-
-                                            return (
-                                                <tr
-                                                    key={bb.id}
-                                                    className={`
-                                                        border-b border-border/50 
-                                                        hover:bg-muted/50 
-                                                        cursor-pointer 
-                                                        transition-colors
-                                                        ${idx % 2 === 0 ? 'bg-transparent' : 'bg-muted/20'}
-                                                    `}
-                                                >
-                                                    <td className="py-3 px-4">
-                                                        <Link href={`/backblasts/${bb.id}`} className="block text-sm text-foreground">
-                                                            {formattedDate}
-                                                        </Link>
-                                                    </td>
-                                                    <td className="py-3 px-4">
-                                                        <Link href={`/backblasts/${bb.id}`} className="block text-sm font-medium text-primary">
-                                                            {bb.ao_display_name || '—'}
-                                                        </Link>
-                                                    </td>
-                                                    <td className="py-3 px-4">
-                                                        <Link href={`/backblasts/${bb.id}`} className="block text-sm text-foreground">
-                                                            {bb.q_name || '—'}
-                                                        </Link>
-                                                    </td>
-                                                    <td className="py-3 px-4 text-center">
-                                                        <Link href={`/backblasts/${bb.id}`} className="block text-sm text-foreground">
-                                                            {bb.pax_count ?? '—'}
-                                                        </Link>
-                                                    </td>
-                                                    <td className="py-3 px-4">
-                                                        <Link href={`/backblasts/${bb.id}`} className="block text-sm text-muted-foreground">
-                                                            {createExcerpt(bb.content_text, 100)}
-                                                        </Link>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {/* Mobile Cards */}
-                            <div className="md:hidden space-y-3">
-                                {backblasts.map((bb) => {
-                                    const formattedDate = bb.backblast_date
-                                        ? new Date(bb.backblast_date + 'T00:00:00').toLocaleDateString('en-US', {
-                                            month: 'short',
-                                            day: 'numeric',
-                                            year: 'numeric',
-                                        })
-                                        : '—';
+                            {/* Event Cards Grid */}
+                            <div className="grid gap-4">
+                                {events.map((event) => {
+                                    const formattedDate = formatDate(event.event_date);
+                                    const isPreblast = event.event_kind === 'preblast';
 
                                     return (
                                         <Link
-                                            key={bb.id}
-                                            href={`/backblasts/${bb.id}`}
-                                            className="block bg-card border border-border rounded-lg p-4 hover:border-primary/50 transition-colors"
+                                            key={event.id}
+                                            href={`/backblasts/${event.id}`}
+                                            className="group block bg-card border border-border rounded-xl p-5 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all duration-200"
                                         >
-                                            <div className="flex justify-between items-start mb-2">
-                                                <span className="text-sm font-medium text-primary">
-                                                    {bb.ao_display_name || 'Unknown AO'}
-                                                </span>
-                                                <span className="text-xs text-muted-foreground">{formattedDate}</span>
+                                            {/* Header Row */}
+                                            <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+                                                {/* Left: AO + Event Type Badge */}
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-lg font-semibold text-primary group-hover:text-primary/80 transition-colors">
+                                                        {event.ao_display_name || 'Unknown AO'}
+                                                    </span>
+                                                    <span className={`
+                                                        inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                        ${isPreblast
+                                                            ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                                            : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                                        }
+                                                    `}>
+                                                        {isPreblast ? 'Preblast' : 'Backblast'}
+                                                    </span>
+                                                </div>
+
+                                                {/* Right: Date */}
+                                                {formattedDate && (
+                                                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                                                        <Calendar className="h-4 w-4" />
+                                                        <span>{formattedDate}</span>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <div className="flex gap-4 text-xs text-muted-foreground mb-2">
-                                                <span>Q: {bb.q_name || '—'}</span>
-                                                <span>PAX: {bb.pax_count ?? '—'}</span>
+
+                                            {/* Title (if available) */}
+                                            {event.title && (
+                                                <h3 className="text-base font-medium text-foreground mb-3 line-clamp-1">
+                                                    {event.title}
+                                                </h3>
+                                            )}
+
+                                            {/* Meta Row: Q + PAX */}
+                                            <div className="flex flex-wrap gap-4 mb-4">
+                                                {event.q_name && (
+                                                    <div className="flex items-center gap-1.5 text-sm">
+                                                        <User className="h-4 w-4 text-muted-foreground" />
+                                                        <span className="text-foreground font-medium">{event.q_name}</span>
+                                                        <span className="text-muted-foreground">(Q)</span>
+                                                    </div>
+                                                )}
+                                                {event.pax_count !== null && event.pax_count > 0 && (
+                                                    <div className="flex items-center gap-1.5 text-sm">
+                                                        <Users className="h-4 w-4 text-muted-foreground" />
+                                                        <span className="text-foreground font-medium">{event.pax_count}</span>
+                                                        <span className="text-muted-foreground">PAX</span>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <p className="text-sm text-muted-foreground line-clamp-2">
-                                                {createExcerpt(bb.content_text, 80)}
+
+                                            {/* Excerpt */}
+                                            <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                                                {createExcerpt(event.content_text, 180)}
                                             </p>
+
+                                            {/* Hover indicator */}
+                                            <div className="mt-4 flex items-center gap-1 text-xs text-primary/70 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <span>View details</span>
+                                                <ChevronRight className="h-3 w-3" />
+                                            </div>
                                         </Link>
                                     );
                                 })}
@@ -270,7 +250,7 @@ export default async function BackblastsPage({ searchParams }: BackblastsPagePro
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
+                        <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
                             <div className="text-sm text-muted-foreground">
                                 Page {page} of {totalPages}
                             </div>
@@ -278,27 +258,27 @@ export default async function BackblastsPage({ searchParams }: BackblastsPagePro
                                 {page > 1 ? (
                                     <Link
                                         href={buildUrl({ page: page - 1 })}
-                                        className="inline-flex items-center gap-1 px-3 py-2 text-sm bg-card border border-border rounded-md hover:bg-muted transition-colors"
+                                        className="inline-flex items-center gap-1 px-4 py-2 text-sm bg-card border border-border rounded-lg hover:bg-muted transition-colors"
                                     >
                                         <ChevronLeft className="h-4 w-4" />
-                                        Prev
+                                        Previous
                                     </Link>
                                 ) : (
-                                    <span className="inline-flex items-center gap-1 px-3 py-2 text-sm bg-card border border-border rounded-md text-muted-foreground cursor-not-allowed opacity-50">
+                                    <span className="inline-flex items-center gap-1 px-4 py-2 text-sm bg-card border border-border rounded-lg text-muted-foreground cursor-not-allowed opacity-50">
                                         <ChevronLeft className="h-4 w-4" />
-                                        Prev
+                                        Previous
                                     </span>
                                 )}
                                 {page < totalPages ? (
                                     <Link
                                         href={buildUrl({ page: page + 1 })}
-                                        className="inline-flex items-center gap-1 px-3 py-2 text-sm bg-card border border-border rounded-md hover:bg-muted transition-colors"
+                                        className="inline-flex items-center gap-1 px-4 py-2 text-sm bg-card border border-border rounded-lg hover:bg-muted transition-colors"
                                     >
                                         Next
                                         <ChevronRight className="h-4 w-4" />
                                     </Link>
                                 ) : (
-                                    <span className="inline-flex items-center gap-1 px-3 py-2 text-sm bg-card border border-border rounded-md text-muted-foreground cursor-not-allowed opacity-50">
+                                    <span className="inline-flex items-center gap-1 px-4 py-2 text-sm bg-card border border-border rounded-lg text-muted-foreground cursor-not-allowed opacity-50">
                                         Next
                                         <ChevronRight className="h-4 w-4" />
                                     </span>
