@@ -2,16 +2,16 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { Section } from '@/components/ui/Section';
-import { Backblast } from '@/types/backblast';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import type { F3Event } from '@/types/f3Event';
+import { ArrowLeft, ExternalLink, Calendar, User, Users, MapPin } from 'lucide-react';
 
 interface BackblastDetailPageProps {
     params: Promise<{ id: string }>;
 }
 
-async function getBackblast(id: string): Promise<Backblast | null> {
+async function getF3Event(id: string): Promise<F3Event | null> {
     const { data, error } = await supabase
-        .from('backblasts')
+        .from('f3_events')
         .select('*')
         .eq('id', id)
         .eq('is_deleted', false)
@@ -21,37 +21,41 @@ async function getBackblast(id: string): Promise<Backblast | null> {
         return null;
     }
 
-    return data;
+    return data as F3Event;
 }
 
 export async function generateMetadata({ params }: BackblastDetailPageProps) {
     const { id } = await params;
-    const backblast = await getBackblast(id);
+    const event = await getF3Event(id);
 
-    if (!backblast) {
-        return { title: 'Backblast Not Found' };
+    if (!event) {
+        return { title: 'Event Not Found' };
     }
 
-    const title = backblast.ao_display_name
-        ? `${backblast.ao_display_name} Backblast`
-        : 'Backblast';
+    const eventType = event.event_kind === 'preblast' ? 'Preblast' : 'Backblast';
+    const title = event.ao_display_name
+        ? `${event.ao_display_name} ${eventType}`
+        : eventType;
 
     return {
         title: `${title} | F3 Marietta`,
-        description: backblast.content_text?.slice(0, 160),
+        description: event.content_text?.slice(0, 160),
     };
 }
 
 export default async function BackblastDetailPage({ params }: BackblastDetailPageProps) {
     const { id } = await params;
-    const backblast = await getBackblast(id);
+    const event = await getF3Event(id);
 
-    if (!backblast) {
+    if (!event) {
         notFound();
     }
 
-    const formattedDate = backblast.backblast_date
-        ? new Date(backblast.backblast_date + 'T00:00:00').toLocaleDateString('en-US', {
+    const isPreblast = event.event_kind === 'preblast';
+    const eventType = isPreblast ? 'Preblast' : 'Backblast';
+
+    const formattedDate = event.event_date
+        ? new Date(event.event_date + 'T00:00:00').toLocaleDateString('en-US', {
             weekday: 'long',
             month: 'long',
             day: 'numeric',
@@ -70,18 +74,34 @@ export default async function BackblastDetailPage({ params }: BackblastDetailPag
                         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
                     >
                         <ArrowLeft className="h-4 w-4" />
-                        Back to Backblasts
+                        Back to Events
                     </Link>
 
                     {/* Metadata Badges */}
                     <div className="flex flex-wrap gap-3 mb-4">
-                        {backblast.ao_display_name && (
-                            <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                                {backblast.ao_display_name}
+                        {/* Event Type Badge */}
+                        <span className={`
+                            inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                            ${isPreblast
+                                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                            }
+                        `}>
+                            {eventType}
+                        </span>
+
+                        {/* AO Badge */}
+                        {event.ao_display_name && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                                <MapPin className="h-3.5 w-3.5" />
+                                {event.ao_display_name}
                             </span>
                         )}
+
+                        {/* Date Badge */}
                         {formattedDate && (
-                            <span className="inline-flex items-center px-3 py-1 rounded-full bg-muted text-muted-foreground text-sm">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted text-muted-foreground text-sm">
+                                <Calendar className="h-3.5 w-3.5" />
                                 {formattedDate}
                             </span>
                         )}
@@ -89,23 +109,37 @@ export default async function BackblastDetailPage({ params }: BackblastDetailPag
 
                     {/* Title */}
                     <h1 className="text-3xl md:text-4xl font-bold font-heading text-foreground mb-4">
-                        {backblast.title || 'Backblast'}
+                        {event.title || eventType}
                     </h1>
 
                     {/* Quick Stats */}
                     <div className="flex flex-wrap gap-6 text-sm">
-                        <div>
-                            <span className="text-muted-foreground">Q: </span>
-                            <span className="text-foreground font-medium">
-                                {backblast.q_name || '—'}
-                            </span>
-                        </div>
-                        <div>
-                            <span className="text-muted-foreground">PAX Count: </span>
-                            <span className="text-foreground font-medium">
-                                {backblast.pax_count ?? '—'}
-                            </span>
-                        </div>
+                        {event.q_name && (
+                            <div className="flex items-center gap-2">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">Q:</span>
+                                <span className="text-foreground font-medium">
+                                    {event.q_name}
+                                </span>
+                            </div>
+                        )}
+                        {event.pax_count !== null && event.pax_count > 0 && (
+                            <div className="flex items-center gap-2">
+                                <Users className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">PAX:</span>
+                                <span className="text-foreground font-medium">
+                                    {event.pax_count}
+                                </span>
+                            </div>
+                        )}
+                        {event.event_time && (
+                            <div className="flex items-center gap-2">
+                                <span className="text-muted-foreground">Time:</span>
+                                <span className="text-foreground font-medium">
+                                    {event.event_time}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -113,49 +147,29 @@ export default async function BackblastDetailPage({ params }: BackblastDetailPag
             {/* Content */}
             <Section>
                 <div className="max-w-4xl mx-auto">
-                    {/* PAX & FNG Section */}
-                    {(backblast.pax_text || backblast.fng_text) && (
-                        <div className="bg-card border border-border rounded-lg p-5 mb-8">
-                            <div className="grid sm:grid-cols-2 gap-6">
-                                {backblast.pax_text && (
-                                    <div>
-                                        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                                            PAX
-                                        </h3>
-                                        <p className="text-foreground text-sm leading-relaxed">
-                                            {backblast.pax_text}
-                                        </p>
-                                    </div>
-                                )}
-                                {backblast.fng_text && backblast.fng_text.toLowerCase() !== 'none' && (
-                                    <div>
-                                        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                                            FNGs
-                                        </h3>
-                                        <p className="text-foreground text-sm leading-relaxed">
-                                            {backblast.fng_text}
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
                     {/* Workout Content */}
                     <article className="prose prose-invert max-w-none">
-                        <div
-                            className="text-foreground text-base leading-relaxed whitespace-pre-line"
-                            style={{ fontFamily: 'var(--font-sans)' }}
-                        >
-                            {backblast.content_text}
-                        </div>
+                        {/* Render HTML content if available */}
+                        {event.content_html ? (
+                            <div
+                                className="text-foreground text-base leading-relaxed"
+                                dangerouslySetInnerHTML={{ __html: event.content_html }}
+                            />
+                        ) : (
+                            <div
+                                className="text-foreground text-base leading-relaxed whitespace-pre-line"
+                                style={{ fontFamily: 'var(--font-sans)' }}
+                            >
+                                {event.content_text}
+                            </div>
+                        )}
                     </article>
 
                     {/* Slack Permalink */}
-                    {backblast.slack_permalink && (
+                    {event.slack_permalink && (
                         <div className="mt-10 pt-6 border-t border-border">
                             <a
-                                href={backblast.slack_permalink}
+                                href={event.slack_permalink}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
