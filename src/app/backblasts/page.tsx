@@ -27,7 +27,13 @@ export default async function BackblastsPage({ searchParams }: BackblastsPagePro
     const searchQuery = params.q || '';
 
     const [result, aoList] = await Promise.all([
-        getBackblastsPaginated({ page, pageSize, ao: aoFilter || undefined, search: searchQuery || undefined }),
+        getBackblastsPaginated({
+            page,
+            pageSize,
+            ao: aoFilter || undefined,
+            search: searchQuery || undefined,
+            eventKind: 'backblast',  // Explicitly filter to backblasts only
+        }),
         getAOList(),
     ]);
 
@@ -63,10 +69,14 @@ export default async function BackblastsPage({ searchParams }: BackblastsPagePro
         return `/backblasts${qs ? `?${qs}` : ''}`;
     };
 
-    // Format date helper
+    // Format date helper - handles both date-only (event_date) and datetime (created_at) formats
     const formatDate = (dateStr: string | null) => {
         if (!dateStr) return null;
-        return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
+        // Handle ISO datetime format (e.g., "2026-01-12T12:00:00.000Z")
+        const date = dateStr.includes('T')
+            ? new Date(dateStr)
+            : new Date(dateStr + 'T00:00:00');
+        return date.toLocaleDateString('en-US', {
             weekday: 'short',
             month: 'short',
             day: 'numeric',
@@ -170,7 +180,8 @@ export default async function BackblastsPage({ searchParams }: BackblastsPagePro
                             {/* Event Cards Grid */}
                             <div className="grid gap-4">
                                 {events.map((event) => {
-                                    const formattedDate = formatDate(event.event_date);
+                                    // Use event_date if available, otherwise fall back to created_at
+                                    const formattedDate = formatDate(event.event_date || event.created_at);
                                     const isPreblast = event.event_kind === 'preblast';
 
                                     return (
