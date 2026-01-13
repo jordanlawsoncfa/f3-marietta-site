@@ -12,12 +12,14 @@ interface SlackEvent {
     subtype?: string;
     channel: string;
     ts: string;
+    thread_ts?: string;  // Present if this is a thread reply
     text?: string;
     user?: string;
     bot_id?: string;
     app_id?: string;
     message?: {
         ts: string;
+        thread_ts?: string;  // Present if this is a thread reply
         text?: string;
         user?: string;
         bot_id?: string;
@@ -91,6 +93,15 @@ async function handleSlackEvent(event: SlackEvent, rawPayload: string) {
     // Only process message events
     if (type !== 'message') {
         console.log('Not a message event, ignoring');
+        return;
+    }
+
+    // Filter out thread replies - we only want top-level messages
+    // A thread reply has thread_ts that differs from ts (or message.ts for edits)
+    const messageTs = event.message?.ts || ts;
+    const threadTs = event.message?.thread_ts || event.thread_ts;
+    if (threadTs && threadTs !== messageTs) {
+        console.log('Skipping thread reply:', { messageTs, threadTs });
         return;
     }
 
