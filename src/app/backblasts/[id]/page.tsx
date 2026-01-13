@@ -148,16 +148,16 @@ export default async function BackblastDetailPage({ params }: BackblastDetailPag
             <Section>
                 <div className="max-w-4xl mx-auto">
                     {/* Workout Content */}
-                    <article className="prose prose-invert max-w-none">
+                    <article className="backblast-content max-w-none">
                         {/* Render HTML content if available */}
                         {event.content_html ? (
                             <div
-                                className="text-foreground text-base leading-relaxed"
+                                className="text-foreground text-base"
                                 dangerouslySetInnerHTML={{ __html: event.content_html }}
                             />
                         ) : (
                             <div
-                                className="text-foreground text-base leading-relaxed whitespace-pre-line"
+                                className="text-foreground text-base whitespace-pre-line"
                                 style={{ fontFamily: 'var(--font-sans)' }}
                             >
                                 {event.content_text}
