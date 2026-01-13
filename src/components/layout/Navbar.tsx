@@ -11,6 +11,7 @@ const navItems = [
     { name: "About", href: "/about" },
     { name: "F3 Terms", href: "/glossary" },
     { name: "Community", href: "/community" },
+    { name: "Backblasts", href: "/backblasts" },
     { name: "FAQ", href: "/fng" },
     { name: "What to Expect", href: "/what-to-expect" },
     { name: "Contact Us", href: "/contact" },

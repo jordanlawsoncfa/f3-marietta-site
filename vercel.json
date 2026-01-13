@@ -1,0 +1,12 @@
+{
+    "crons": [
+        {
+            "path": "/api/slack/reconcile",
+            "schedule": "0 7 * * *"
+        },
+        {
+            "path": "/api/slack/sync-users",
+            "schedule": "0 6 * * *"
+        }
+    ]
+}
